@@ -21,12 +21,12 @@ logger = InternalLogger(__name__)
 try:
     from importlib.metadata import version
 
-    Version = version("prefab-cloud-python")
+    Version = version("reforge-python")
 except importlib.metadata.PackageNotFoundError:
     Version = "development"
 
 
-VersionHeader = "X-PrefabCloud-Client-Version"
+VersionHeader = "X-Reforge-Client-Version"
 
 DEFAULT_TIMEOUT = 5  # seconds
 
@@ -125,7 +125,7 @@ class ApiClient:
         self.session.mount("http://", requests.adapters.HTTPAdapter())
         self.session.headers.update(
             {
-                "X-PrefabCloud-Client-Version": f"prefab-cloud-python-{getattr(options, 'version', 'development')}"
+                "X-Reforge-Client-Version": f"reforge-python-{getattr(options, 'version', 'development')}"
             }
         )
         # Initialize a cache (here with a maximum of 2 entries).
