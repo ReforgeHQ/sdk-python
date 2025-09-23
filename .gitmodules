@@ -1,3 +1,3 @@
-[submodule "tests/prefab-cloud-integration-test-data"]
-	path = tests/prefab-cloud-integration-test-data
-	url = git@github.com:prefab-cloud/prefab-cloud-integration-test-data
+[submodule "tests/shared-integration-test-data"]
+	path = tests/shared-integration-test-data
+	url = git@github.com:ReforgeHQ/integration-test-data.git
