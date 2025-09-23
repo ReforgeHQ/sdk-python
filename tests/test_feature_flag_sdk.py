@@ -44,8 +44,7 @@ class TestFeatureFlagClient:
     @staticmethod
     def build_client():
         options = Options(
-            x_datafile="tests/prefab.datafile.json",
-            reforge_datasources="LOCAL_ONLY",
+            x_datafile="tests/test.datafile.json",
         )
         client = Client(options)
         return client.feature_flag_sdk()

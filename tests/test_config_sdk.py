@@ -49,9 +49,11 @@ def options():
         reforge_datasources="LOCAL_ONLY",
         on_ready_callback=None,
     ):
+        # Only use datafile for LOCAL_ONLY mode, not for ALL mode
+        datafile = "tests/prefab.datafile.json" if reforge_datasources == "LOCAL_ONLY" else None
         return Options(
             sdk_key=sdk_key,
-            x_datafile="tests/prefab.datafile.json",
+            x_datafile=datafile,
             x_use_local_cache=x_use_local_cache,
             on_no_default=on_no_default,
             collect_sync_interval=None,
