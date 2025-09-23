@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-import prefab_pb2 as Prefab
-from prefab_cloud_python import Options
+import reforge_pb2 as Reforge
+from reforge_python import Options
 
 
-class ConfigClientInterface(ABC):
+class ConfigSDKInterface(ABC):
     @abstractmethod
     def continue_connection_processing(self) -> bool:
         pass
@@ -21,7 +21,7 @@ class ConfigClientInterface(ABC):
         pass
 
     @abstractmethod
-    def load_configs(self, configs: Prefab.Configs, src: str) -> None:
+    def load_configs(self, configs: Reforge.Configs, src: str) -> None:
         pass
 
     @property

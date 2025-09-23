@@ -8,7 +8,7 @@ from ._internal_logging import InternalLogger
 logger = InternalLogger(__name__)
 
 
-class FeatureFlagClient:
+class FeatureFlagSDK:
     def __init__(self, base_client):
         self.base_client = base_client
 

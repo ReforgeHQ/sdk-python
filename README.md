@@ -9,7 +9,7 @@ Python client for reforge.com, providing Config, FeatureFlags as a Service
 ## Example usage
 
 ```python
-from reforge_python import Client, Options
+from reforge_python import ReforgeSDK, Options
 import reforge_python
 
 options = Options(
@@ -28,7 +28,7 @@ context = {
 
 reforge_python.set_options(options)
 
-result = reforge_python.get_client().enabled("my-first-feature-flag", context=context)
+result = reforge_python.get_sdk().enabled("my-first-feature-flag", context=context)
 
 print("my-first-feature-flag is:", result)
 ```

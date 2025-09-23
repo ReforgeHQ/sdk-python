@@ -13,12 +13,12 @@ from ._internal_logging import (
     ReentrancyCheck,
 )
 from .context import Context, ScopedContext
-from .config_client import ConfigClient
-from .feature_flag_client import FeatureFlagClient
+from .config_sdk import ConfigSDK
+from .feature_flag_sdk import FeatureFlagSDK
 from .options import Options
 from ._requests import TimeoutHTTPAdapter, VersionHeader, Version
 from typing import Optional, Union
-import prefab_pb2 as Prefab
+import reforge_pb2 as Reforge
 import uuid
 import requests
 from urllib.parse import urljoin
@@ -29,12 +29,12 @@ from .constants import (
 )
 from ._internal_constants import LOG_LEVEL_BASE_KEY
 
-PostBodyType = Union[Prefab.Loggers, Prefab.ContextShapes, Prefab.TelemetryEvents]
+PostBodyType = Union[Reforge.Loggers, Reforge.ContextShapes, Reforge.TelemetryEvents]
 logger = InternalLogger(__name__)
-LLV = Prefab.LogLevel.Value
+LLV = Reforge.LogLevel.Value
 
 
-class Client:
+class ReforgeSDK:
     max_sleep_sec = 10
     base_sleep_sec = 0.5
 
@@ -70,7 +70,7 @@ class Client:
             )
 
         self.context().clear()
-        self.config_client()
+        self.config_sdk()
 
     def __enter__(self):
         return self
@@ -85,19 +85,19 @@ class Client:
         context: Optional[ContextDictOrContext] = None,
     ) -> ConfigValueType:
         if self.is_ff(key):
-            return self.feature_flag_client().get(key, default=default, context=context)
+            return self.feature_flag_sdk().get(key, default=default, context=context)
         else:
-            return self.config_client().get(key, default=default, context=context)
+            return self.config_sdk().get(key, default=default, context=context)
 
     def enabled(
         self, feature_name: str, context: Optional[ContextDictOrContext] = None
     ) -> bool:
-        return self.feature_flag_client().feature_is_on_for(
+        return self.feature_flag_sdk().feature_is_on_for(
             feature_name, context=context
         )
 
     def is_ff(self, key: str) -> bool:
-        raw = self.config_client().config_resolver.raw(key)
+        raw = self.config_sdk().config_resolver.raw(key)
         if raw is not None and raw.config_type == Prefab.ConfigType.Value(
             "FEATURE_FLAG"
         ):
@@ -108,7 +108,7 @@ class Client:
         """determine the loglevel for the given logger_name. The return value is one of the logging.WARNING, logging.INFO numeric constants"""
         try:
             ReentrancyCheck.set()  # set thread local so any internal-to-client-logging doesn't cause lockup
-            if not self.config_client().is_ready():
+            if not self.config_sdk().is_ready():
                 return self.options.bootstrap_loglevel
             default = logging.WARNING
             if logger_name:
@@ -135,12 +135,12 @@ class Client:
         return Context.scope(context)
 
     @functools.cache
-    def config_client(self) -> ConfigClient:
+    def config_sdk(self) -> ConfigClient:
         client = ConfigClient(self)
         return client
 
     @functools.cache
-    def feature_flag_client(self) -> FeatureFlagClient:
+    def feature_flag_sdk(self) -> FeatureFlagClient:
         return FeatureFlagClient(self)
 
     def post(self, path: str, body: PostBodyType) -> requests.models.Response:
@@ -164,7 +164,7 @@ class Client:
             self.telemetry_manager.record_log(logger_name, severity)
 
     def is_ready(self) -> bool:
-        return self.config_client().is_ready()
+        return self.config_sdk().is_ready()
 
     def set_global_context(
         self, global_context: Optional[ContextDictOrContext] = None
@@ -176,6 +176,6 @@ class Client:
         if not self.shutdown_flag.is_set():
             logger.info("Shutting down prefab client instance")
             self.shutdown_flag.set()
-            self.config_client().close()
+            self.config_sdk().close()
         else:
             logger.warning("Close already called")

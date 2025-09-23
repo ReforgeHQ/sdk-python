@@ -6,12 +6,12 @@ import threading
 import time
 from typing import Optional
 
-import prefab_pb2 as Prefab
+import reforge_pb2 as Reforge
 import os
 from ._count_down_latch import CountDownLatch
 from ._requests import ApiClient, UnauthorizedException
 from ._sse_connection_manager import SSEConnectionManager
-from .config_client_interface import ConfigClientInterface
+from .config_sdk_interface import ConfigSDKInterface
 from .config_loader import ConfigLoader
 from .config_resolver import ConfigResolver
 from .config_value_unwrapper import ConfigValueUnwrapper
@@ -30,7 +30,7 @@ logger = InternalLogger(__name__)
 class InitializationTimeoutException(Exception):
     def __init__(self, timeout_seconds, key):
         super().__init__(
-            f"Prefab couldn't initialize in {timeout_seconds} second timeout. Trying to fetch key `{key}`."
+            f"Reforge couldn't initialize in {timeout_seconds} second timeout. Trying to fetch key `{key}`."
         )
 
 
@@ -42,7 +42,7 @@ If you'd prefer returning `None` rather than raising when this occurs, modify th
         )
 
 
-class ConfigClient(ConfigClientInterface):
+class ConfigSDK(ConfigSDKInterface):
     def __init__(self, base_client):
         self.is_initialized = threading.Event()
         self.checkpointing_thread = None
@@ -165,7 +165,7 @@ class ConfigClient(ConfigClientInterface):
                 allow_cache=True,
             )
             if response.ok:
-                configs = Prefab.Configs.FromString(response.content)
+                configs = Reforge.Configs.FromString(response.content)
                 self.load_configs(configs, "remote_api_cdn")
                 return True
             else:
@@ -176,7 +176,7 @@ class ConfigClient(ConfigClientInterface):
         except UnauthorizedException:
             self.handle_unauthorized_response()
 
-    def load_configs(self, configs: Prefab.Configs, source: str) -> None:
+    def load_configs(self, configs: Reforge.Configs, source: str) -> None:
         project_id = configs.config_service_pointer.project_id
         project_env_id = configs.config_service_pointer.project_env_id
         self.config_resolver.project_env_id = project_env_id
@@ -221,7 +221,7 @@ class ConfigClient(ConfigClientInterface):
             return False
         try:
             with open(self.cache_path, "r") as f:
-                configs = Parse(f.read(), Prefab.Configs())
+                configs = Parse(f.read(), Reforge.Configs())
                 self.load_configs(configs, "cache")
 
                 hours_old = round(
@@ -238,7 +238,7 @@ class ConfigClient(ConfigClientInterface):
 
     def load_json_file(self, datafile):
         with open(datafile) as f:
-            configs = Parse(f.read(), Prefab.Configs())
+            configs = Parse(f.read(), Reforge.Configs())
             self.load_configs(configs, "datafile")
 
     def finish_init(self, source):

@@ -86,7 +86,7 @@ class Options:
         self.__set_api_url(
             reforge_api_urls
             or self.api_urls_from_env()
-            or ["https://belt.reforge.com", "https://suspenders.reforge.com"]
+            or ["https://primary.reforge.com", "https://secondary.reforge.com"]
         )
         self.__set_stream_url(
             reforge_stream_urls
