@@ -37,10 +37,7 @@ def update_pyproject_toml(new_version: str):
 
     # Update version line
     updated_content = re.sub(
-        r'^version = ".*"$',
-        f'version = "{new_version}"',
-        content,
-        flags=re.MULTILINE
+        r'^version = ".*"$', f'version = "{new_version}"', content, flags=re.MULTILINE
     )
 
     if content == updated_content:
@@ -54,7 +51,7 @@ def update_pyproject_toml(new_version: str):
 
 def validate_version(version: str) -> bool:
     """Validate version format (semantic versioning)."""
-    pattern = r'^\d+\.\d+\.\d+(-[a-zA-Z0-9\-\.]+)?$'
+    pattern = r"^\d+\.\d+\.\d+(-[a-zA-Z0-9\-\.]+)?$"
     return bool(re.match(pattern, version))
 
 

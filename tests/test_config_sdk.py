@@ -50,7 +50,11 @@ def options():
         on_ready_callback=None,
     ):
         # Only use datafile for LOCAL_ONLY mode, not for ALL mode
-        datafile = "tests/prefab.datafile.json" if reforge_datasources == "LOCAL_ONLY" else None
+        datafile = (
+            "tests/prefab.datafile.json"
+            if reforge_datasources == "LOCAL_ONLY"
+            else None
+        )
         return Options(
             sdk_key=sdk_key,
             x_datafile=datafile,
@@ -129,9 +133,7 @@ class TestConfigSDK:
         )
 
     def test_cache_path_local_only(self, config_client_factory, options):
-        config_client = config_client_factory.create_config_client(
-            options()
-        )
+        config_client = config_client_factory.create_config_client(options())
         assert (
             config_client.cache_path
             == f"{os.environ['HOME']}/.cache/prefab.cache.local.json"

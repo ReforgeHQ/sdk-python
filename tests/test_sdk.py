@@ -1,4 +1,3 @@
-import logging
 
 from sdk_reforge import Options, ReforgeSDK as Client
 from sdk_reforge.config_sdk import MissingDefaultException

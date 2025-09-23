@@ -110,7 +110,8 @@ class TestOptionsApiUrl:
 
     def test_prefab_api_url_doesnt_matter_local_only(self):
         options = Options(
-            reforge_api_urls=["http://api.prefab.cloud"], reforge_datasources="LOCAL_ONLY"
+            reforge_api_urls=["http://api.prefab.cloud"],
+            reforge_datasources="LOCAL_ONLY",
         )
         assert options.reforge_api_urls is None
 
@@ -162,7 +163,6 @@ class TestOptionsStreamUrl:
         assert options.reforge_stream_urls is None
 
 
-
 class TestOptionsOnNoDefault:
     def test_defaults_to_raise(self):
         with extended_env({"REFORGE_DATASOURCES": "LOCAL_ONLY"}):
@@ -195,5 +195,3 @@ class TestOptionsOnConnectionFailure:
         with extended_env({"REFORGE_DATASOURCES": "LOCAL_ONLY"}):
             options = Options(on_connection_failure="WHATEVER")
             assert options.on_connection_failure == "RETURN"
-
-

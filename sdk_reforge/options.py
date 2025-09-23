@@ -78,7 +78,11 @@ class Options:
     ) -> None:
         self.reforge_datasources = Options.__validate_datasource(reforge_datasources)
         self.datafile = x_datafile
-        self.__set_api_key(sdk_key or os.environ.get("REFORGE_SDK_KEY") or os.environ.get("PREFAB_API_KEY"))
+        self.__set_api_key(
+            sdk_key
+            or os.environ.get("REFORGE_SDK_KEY")
+            or os.environ.get("PREFAB_API_KEY")
+        )
         self.__set_api_url(
             reforge_api_urls
             or self.api_urls_from_env()
@@ -195,8 +199,6 @@ class Options:
                 raise e
         return valid_urls
 
-
-
     def __set_on_no_default(self, value: str) -> None:
         if value in VALID_ON_NO_DEFAULT:
             self.on_no_default = value
@@ -208,4 +210,3 @@ class Options:
             self.on_connection_failure = value
         else:
             self.on_connection_failure = "RETURN"
-

@@ -75,9 +75,7 @@ def get_sdk() -> ReforgeSDK:
         if not __options:
             raise Exception("Options has not been set")
         if not __base_sdk:
-            log.info(
-                f"Initializing Reforge SDK version {version('reforge-python')}"
-            )
+            log.info(f"Initializing Reforge SDK version {version('reforge-python')}")
             __base_sdk = ReforgeSDK(__options)
             return __base_sdk
 

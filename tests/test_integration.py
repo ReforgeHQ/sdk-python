@@ -82,7 +82,7 @@ def options():
             "https://primary.goatsofreforge.com",
             "https://secondary.goatsofreforge.com",
         ],
-        reforge_stream_urls = ["https://stream.goatsofreforge.com"],
+        reforge_stream_urls=["https://stream.goatsofreforge.com"],
         reforge_telemetry_url="https://telemetry.goatsofreforge.com",
         collect_sync_interval=None,
     )
@@ -323,7 +323,6 @@ class TestIntegration:
     )
     def test_get_feature_flag(self, options, testcase):
         run_test(testcase, options, input_key="flag")
-
 
     @pytest.mark.parametrize(
         "testcase",

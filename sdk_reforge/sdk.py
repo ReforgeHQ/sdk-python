@@ -11,7 +11,7 @@ from .config_sdk import ConfigSDK
 from .feature_flag_sdk import FeatureFlagSDK
 from .options import Options
 from ._requests import TimeoutHTTPAdapter, VersionHeader, Version
-from typing import Optional, Union
+from typing import Optional
 import prefab_pb2 as Prefab
 import uuid
 import requests
@@ -84,9 +84,7 @@ class ReforgeSDK:
     def enabled(
         self, feature_name: str, context: Optional[ContextDictOrContext] = None
     ) -> bool:
-        return self.feature_flag_sdk().feature_is_on_for(
-            feature_name, context=context
-        )
+        return self.feature_flag_sdk().feature_is_on_for(feature_name, context=context)
 
     def is_ff(self, key: str) -> bool:
         raw = self.config_sdk().config_resolver.raw(key)
@@ -95,7 +93,6 @@ class ReforgeSDK:
         ):
             return True
         return False
-
 
     def context(self) -> Context:
         return Context.get_current()
@@ -128,13 +125,12 @@ class ReforgeSDK:
             auth=("authuser", self.options.api_key or ""),
         )
 
-
     def is_ready(self) -> bool:
         return self.config_sdk().is_ready()
 
     def set_global_context(
         self, global_context: Optional[ContextDictOrContext] = None
-    ) -> Client:
+    ) -> "ReforgeSDK":
         self.global_context = Context.normalize_context_arg(global_context)
         return self
 

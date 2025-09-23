@@ -1,6 +1,6 @@
 exclude: >
   (?x)^(
-    prefab_pb2.*\.py
+    prefab_pb2\.py
   )$
 
 repos:
@@ -24,14 +24,14 @@ repos:
     rev: 23.1.0
     hooks:
       - id: black
-        exclude: ^prefab_pb2.*$
+        exclude: ^prefab_pb2\.py$
 
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: "v0.0.259"
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
-        exclude: ^prefab_pb2.*\.pyi?$
+        exclude: ^prefab_pb2\.pyi?$
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1

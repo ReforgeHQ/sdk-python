@@ -10,8 +10,7 @@ class TestConfigLoader:
             collect_sync_interval=None,
         )
         client = Client(options)
-        loader = client.config_sdk().config_loader
-
+        client.config_sdk().config_loader
 
     def test_highwater(self):
         client = self.client()

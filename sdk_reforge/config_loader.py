@@ -37,4 +37,3 @@ class ConfigLoader:
         for config_value in self.api_config.values():
             configs.configs.append(config_value["config"])
         return configs
-

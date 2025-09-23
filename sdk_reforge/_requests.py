@@ -1,4 +1,3 @@
-import importlib
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -17,8 +16,10 @@ from tenacity import (
     retry_if_exception_type,
 )
 
-logger = InternalLogger(__name__)
 import os
+
+logger = InternalLogger(__name__)
+
 
 def _get_version():
     try:
@@ -27,6 +28,7 @@ def _get_version():
             return f.read().strip()
     except (FileNotFoundError, IOError):
         return "development"
+
 
 Version = _get_version()
 
