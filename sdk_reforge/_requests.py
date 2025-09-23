@@ -119,7 +119,7 @@ class ApiClient:
             - prefab_api_urls: list of API host URLs (e.g. ["https://a.example.com", "https://b.example.com"])
             - version: version string
         """
-        self.hosts = options.prefab_api_urls
+        self.hosts = options.reforge_api_urls
         self.session = requests.Session()
         self.session.mount("https://", requests.adapters.HTTPAdapter())
         self.session.mount("http://", requests.adapters.HTTPAdapter())

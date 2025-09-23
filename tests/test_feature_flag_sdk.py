@@ -1,4 +1,4 @@
-from prefab_cloud_python import Options, Client
+from sdk_reforge import Options, ReforgeSDK as Client
 
 default = "default"
 
@@ -44,9 +44,8 @@ class TestFeatureFlagClient:
     @staticmethod
     def build_client():
         options = Options(
-            prefab_config_classpath_dir="tests",
-            prefab_envs="unit_tests",
-            prefab_datasources="LOCAL_ONLY",
+            x_datafile="tests/prefab.datafile.json",
+            reforge_datasources="LOCAL_ONLY",
         )
         client = Client(options)
-        return client.feature_flag_client()
+        return client.feature_flag_sdk()

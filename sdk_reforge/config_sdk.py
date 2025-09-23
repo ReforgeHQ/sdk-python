@@ -6,7 +6,7 @@ import threading
 import time
 from typing import Optional
 
-import reforge_pb2 as Reforge
+import prefab_pb2 as Prefab
 import os
 from ._count_down_latch import CountDownLatch
 from ._requests import ApiClient, UnauthorizedException
@@ -61,7 +61,7 @@ class ConfigSDK(ConfigSDKInterface):
         self.set_cache_path()
         self.api_client = ApiClient(self.options)
         self.sse_connection_manager = SSEConnectionManager(
-            self.api_client, self, self.options.prefab_stream_urls
+            self.api_client, self, self.options.reforge_stream_urls
         )
 
         if self.options.is_local_only():
@@ -165,7 +165,7 @@ class ConfigSDK(ConfigSDKInterface):
                 allow_cache=True,
             )
             if response.ok:
-                configs = Reforge.Configs.FromString(response.content)
+                configs = Prefab.Configs.FromString(response.content)
                 self.load_configs(configs, "remote_api_cdn")
                 return True
             else:
@@ -176,7 +176,7 @@ class ConfigSDK(ConfigSDKInterface):
         except UnauthorizedException:
             self.handle_unauthorized_response()
 
-    def load_configs(self, configs: Reforge.Configs, source: str) -> None:
+    def load_configs(self, configs: Prefab.Configs, source: str) -> None:
         project_id = configs.config_service_pointer.project_id
         project_env_id = configs.config_service_pointer.project_env_id
         self.config_resolver.project_env_id = project_env_id
@@ -221,7 +221,7 @@ class ConfigSDK(ConfigSDKInterface):
             return False
         try:
             with open(self.cache_path, "r") as f:
-                configs = Parse(f.read(), Reforge.Configs())
+                configs = Parse(f.read(), Prefab.Configs())
                 self.load_configs(configs, "cache")
 
                 hours_old = round(
@@ -238,7 +238,7 @@ class ConfigSDK(ConfigSDKInterface):
 
     def load_json_file(self, datafile):
         with open(datafile) as f:
-            configs = Parse(f.read(), Reforge.Configs())
+            configs = Parse(f.read(), Prefab.Configs())
             self.load_configs(configs, "datafile")
 
     def finish_init(self, source):

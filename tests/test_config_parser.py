@@ -1,5 +1,5 @@
-from prefab_cloud_python.config_parser import ConfigParser
-from prefab_cloud_python.config_value_unwrapper import ConfigValueUnwrapper
+from sdk_reforge.config_parser import ConfigParser
+from sdk_reforge.config_value_unwrapper import ConfigValueUnwrapper
 import prefab_pb2 as Prefab
 import os
 from contextlib import contextmanager

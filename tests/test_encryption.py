@@ -1,4 +1,4 @@
-from prefab_cloud_python.encryption import Encryption
+from sdk_reforge.encryption import Encryption
 
 
 class TestEncryption:

@@ -5,10 +5,10 @@ from typing import Optional, Callable
 import sseclient  # type: ignore
 from requests import Response
 
-from prefab_cloud_python._internal_logging import InternalLogger
-from prefab_cloud_python._requests import ApiClient, UnauthorizedException
+from sdk_reforge._internal_logging import InternalLogger
+from sdk_reforge._requests import ApiClient, UnauthorizedException
 import prefab_pb2 as Prefab
-from prefab_cloud_python.config_client_interface import ConfigClientInterface
+from sdk_reforge.config_sdk_interface import ConfigSDKInterface
 
 SHORT_CONNECTION_THRESHOLD = 2  # seconds
 CONSECUTIVE_SHORT_CONNECTION_LIMIT = 2  # times
@@ -27,7 +27,7 @@ class SSEConnectionManager:
     def __init__(
         self,
         api_client: ApiClient,
-        config_client: ConfigClientInterface,
+        config_client: ConfigSDKInterface,
         urls: list[str],
     ):
         self.api_client = api_client

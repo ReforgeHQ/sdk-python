@@ -1,4 +1,5 @@
 import os
+import logging
 from unittest.mock import patch
 
 import pytest
@@ -6,20 +7,20 @@ import yaml
 
 from sdk_reforge import Options, ReforgeSDK
 from sdk_reforge.context import Context
-import reforge_pb2 as Reforge
-from prefab_cloud_python.config_client import (
+import prefab_pb2 as Prefab
+from sdk_reforge.config_sdk import (
     InitializationTimeoutException,
     MissingDefaultException,
 )
-from prefab_cloud_python.config_value_unwrapper import (
+from sdk_reforge.config_value_unwrapper import (
     EnvVarParseException,
     MissingEnvVarException,
 )
-from prefab_cloud_python.config_value_wrapper import ConfigValueWrapper
-from prefab_cloud_python.encryption import DecryptionException
+from sdk_reforge.config_value_wrapper import ConfigValueWrapper
+from sdk_reforge.encryption import DecryptionException
 from tests.helpers import get_telemetry_events_by_type, sort_proto_loggers
 
-LLV = Reforge.LogLevel.Value
+LLV = Prefab.LogLevel.Value
 
 CustomExceptions = {
     "unable_to_decrypt": DecryptionException,
@@ -203,11 +204,11 @@ def run_logging_telemetry_test(test, case, client, spy_post_method):
 
 def run_context_shape_telemetry_test(test, case, client, spy_post_method):
     context = Context(case["data"])
-    client.config_client().get("some-key", default=10, context=context)
+    client.config_sdk().get("some-key", default=10, context=context)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     expected_shapes = [
-        Reforge.ContextShape(name=item["name"], field_types=item["field_types"])
+        Prefab.ContextShape(name=item["name"], field_types=item["field_types"])
         for item in case["expected_data"]
     ]
     assert url == "/api/v1/telemetry/"
@@ -219,7 +220,7 @@ def run_context_shape_telemetry_test(test, case, client, spy_post_method):
 def run_context_instances_telemetry_test(test, case, client, spy_post_method):
     context = Context(case["data"])
     expected_context_proto = Context(case["expected_data"]).to_proto()
-    client.config_client().get("some-key", default=10, context=context)
+    client.config_sdk().get("some-key", default=10, context=context)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     assert url == "/api/v1/telemetry/"
@@ -230,7 +231,7 @@ def run_context_instances_telemetry_test(test, case, client, spy_post_method):
 
 def run_evaluation_summary_telemetry_test(test, case, client, spy_post_method):
     for key in case.get("data", {})["keys"]:
-        client.config_client().get(key)
+        client.config_sdk().get(key)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     assert url == "/api/v1/telemetry/"
@@ -256,7 +257,7 @@ def clear_config_ids_and_sort(summary_list):
 def build_loggers_expected_data(expected_data):
     loggers_expected_data = []
     for logger_data in expected_data:
-        current_logger = Reforge.Logger(logger_name=logger_data["logger_name"])
+        current_logger = Prefab.Logger(logger_name=logger_data["logger_name"])
         for level, count in logger_data["counts"].items():
             setattr(current_logger, level, count)
         loggers_expected_data.append(current_logger)
@@ -267,7 +268,7 @@ def build_evaluation_summary_expected_data(expected_data):
     summaries = []
     for expected_datum in expected_data:
         counts = [
-            Reforge.ConfigEvaluationCounter(
+            Prefab.ConfigEvaluationCounter(
                 count=expected_datum["count"],
                 config_row_index=expected_datum["summary"]["config_row_index"],
                 conditional_value_index=expected_datum["summary"][
@@ -280,7 +281,7 @@ def build_evaluation_summary_expected_data(expected_data):
             )
         ]
         summaries.append(
-            Reforge.ConfigEvaluationSummary(
+            Prefab.ConfigEvaluationSummary(
                 key=expected_datum["key"], type=expected_datum["type"], counters=counts
             )
         )
@@ -323,17 +324,6 @@ class TestIntegration:
     def test_get_feature_flag(self, options, testcase):
         run_test(testcase, options, input_key="flag")
 
-    @pytest.mark.parametrize(
-        "testcase",
-        load_test_cases_from_file("get_log_level.yaml"),
-        ids=make_id_from_test_case,
-    )
-    def test_get_log_level(self, options, testcase):
-        run_test(
-            testcase,
-            options,
-            expected_modifier=(lambda x: LLV(x)),
-        )
 
     @pytest.mark.parametrize(
         "testcase",

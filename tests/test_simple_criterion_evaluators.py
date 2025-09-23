@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 
 import pytest
 import prefab_pb2 as Prefab
-from prefab_cloud_python.simple_criterion_evaluators import (
+from sdk_reforge.simple_criterion_evaluators import (
     NumericOperators,
     StringOperators,
     DateOperators,

@@ -37,8 +37,8 @@ from .constants import (
 )
 
 # Re-export Protocol Buffer types for easier access
-import reforge_pb2
-from reforge_pb2 import (
+import prefab_pb2
+from prefab_pb2 import (
     ConfigValue,
     StringList,
     Context as ProtoContext,
@@ -52,7 +52,7 @@ from reforge_pb2 import (
 log = _internal_logging.InternalLogger(__name__)
 
 
-__base_sdk: Optional[Client] = None
+__base_sdk: Optional[ReforgeSDK] = None
 __options: Optional[Options] = None
 __lock = _ReadWriteLock()
 

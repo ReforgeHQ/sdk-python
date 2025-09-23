@@ -5,7 +5,7 @@ import prefab_pb2 as Prefab
 from types import MappingProxyType
 from numbers import Real  # includes both int and float
 
-from prefab_cloud_python.semantic_version import SemanticVersion
+from sdk_reforge.semantic_version import SemanticVersion
 
 
 def negate(should_negate: bool, value: bool) -> bool:

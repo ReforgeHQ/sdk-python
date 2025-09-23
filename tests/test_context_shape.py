@@ -1,4 +1,4 @@
-from prefab_cloud_python.context_shape import ContextShape, MAPPING
+from sdk_reforge.context_shape import ContextShape, MAPPING
 import prefab_pb2 as Prefab
 
 

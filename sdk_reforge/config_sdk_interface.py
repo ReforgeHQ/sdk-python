@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-import reforge_pb2 as Reforge
+import prefab_pb2 as Prefab
 from sdk_reforge import Options
 
 
@@ -21,7 +21,7 @@ class ConfigSDKInterface(ABC):
         pass
 
     @abstractmethod
-    def load_configs(self, configs: Reforge.Configs, src: str) -> None:
+    def load_configs(self, configs: Prefab.Configs, src: str) -> None:
         pass
 
     @property

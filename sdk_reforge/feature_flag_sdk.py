@@ -20,7 +20,7 @@ class FeatureFlagSDK:
     def feature_is_on_for(
         self, feature_name, context: Optional[dict | Context] = None
     ) -> bool:
-        variant = self.base_client.config_client().get(
+        variant = self.base_client.config_sdk().get(
             feature_name, False, context=context
         )
         return self._is_on(variant)
@@ -39,7 +39,7 @@ class FeatureFlagSDK:
         default=NoDefaultProvided,
         context: Optional[dict | Context] = None,
     ) -> ConfigValueType:
-        return self.base_client.config_client().get(
+        return self.base_client.config_sdk().get(
             feature_name, default=default, context=context
         )
 

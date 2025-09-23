@@ -1,4 +1,4 @@
-from prefab_cloud_python.weighted_value_resolver import WeightedValueResolver
+from sdk_reforge.weighted_value_resolver import WeightedValueResolver
 import prefab_pb2 as Prefab
 import pytest
 

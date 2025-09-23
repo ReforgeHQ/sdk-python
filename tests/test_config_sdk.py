@@ -1,7 +1,7 @@
 import threading
 
-from prefab_cloud_python import Options, Client
-from prefab_cloud_python.config_client import MissingDefaultException, ConfigClient
+from sdk_reforge import Options, ReforgeSDK as Client
+from sdk_reforge.config_sdk import MissingDefaultException, ConfigSDK
 import prefab_pb2 as Prefab
 import pytest
 import os
@@ -20,13 +20,13 @@ def extended_env(new_env_vars, deleted_env_vars=[]):
     os.environ.update(old_env)
 
 
-class ConfigClientFactoryFixture:
+class ConfigSDKFactoryFixture:
     def __init__(self):
         self.client = None
 
-    def create_config_client(self, options: Options) -> ConfigClient:
+    def create_config_client(self, options: Options) -> ConfigSDK:
         self.client = Client(options)
-        return self.client.config_client()
+        return self.client.config_sdk()
 
     def close(self):
         if self.client:
@@ -35,7 +35,7 @@ class ConfigClientFactoryFixture:
 
 @pytest.fixture
 def config_client_factory():
-    factory_fixture = ConfigClientFactoryFixture()
+    factory_fixture = ConfigSDKFactoryFixture()
     yield factory_fixture
     factory_fixture.close()
 
@@ -45,16 +45,13 @@ def options():
     def options(
         on_no_default="RAISE",
         x_use_local_cache=True,
-        prefab_envs=["unit_tests"],
-        api_key=None,
-        prefab_datasources="LOCAL_ONLY",
+        sdk_key=None,
+        reforge_datasources="LOCAL_ONLY",
         on_ready_callback=None,
     ):
         return Options(
-            api_key=api_key,
-            prefab_config_classpath_dir="tests",
-            prefab_envs=prefab_envs,
-            prefab_datasources=prefab_datasources,
+            sdk_key=sdk_key,
+            x_datafile="tests/prefab.datafile.json",
             x_use_local_cache=x_use_local_cache,
             on_no_default=on_no_default,
             collect_sync_interval=None,
@@ -64,15 +61,11 @@ def options():
     return options
 
 
-class TestConfigClient:
+class TestConfigSDK:
     def test_get(self, config_client_factory, options):
         config_client = config_client_factory.create_config_client(options())
 
-        assert config_client.get("sample") == "test sample value"
-        assert config_client.get("sample_int") == 123
-        assert config_client.get("sample_double") == 12.12
-        assert config_client.get("sample_bool")
-        assert config_client.get("log-level.app") == Prefab.LogLevel.Value("ERROR")
+        assert config_client.get("foo.str") == "hello!"
 
     def test_get_with_default(self, config_client_factory, options):
         config_client = config_client_factory.create_config_client(options())
@@ -126,7 +119,7 @@ class TestConfigClient:
 
     def test_cache_path(self, config_client_factory, options):
         config_client = config_client_factory.create_config_client(
-            options(api_key="123-API-KEY-SDK", prefab_datasources="ALL")
+            options(sdk_key="123-API-KEY-SDK", reforge_datasources="ALL")
         )
         assert (
             config_client.cache_path
@@ -135,7 +128,7 @@ class TestConfigClient:
 
     def test_cache_path_local_only(self, config_client_factory, options):
         config_client = config_client_factory.create_config_client(
-            options(prefab_envs=[])
+            options()
         )
         assert (
             config_client.cache_path

@@ -15,3 +15,5 @@ ContextDictType = dict[
     ],
 ]
 ContextDictOrContext = Union[ContextDictType, "Context"]
+
+PostBodyType = bytes

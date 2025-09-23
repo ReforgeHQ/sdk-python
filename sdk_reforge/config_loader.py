@@ -1,4 +1,4 @@
-import reforge_pb2 as Reforge
+import prefab_pb2 as Prefab
 from ._internal_logging import InternalLogger
 
 logger = InternalLogger(__name__)
@@ -33,7 +33,7 @@ class ConfigLoader:
         self.highwater_mark = max([config.id, self.highwater_mark])
 
     def get_api_deltas(self):
-        configs = Reforge.Configs()
+        configs = Prefab.Configs()
         for config_value in self.api_config.values():
             configs.configs.append(config_value["config"])
         return configs

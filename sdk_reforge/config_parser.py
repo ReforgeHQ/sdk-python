@@ -1,6 +1,6 @@
 import prefab_pb2 as Prefab
 
-from prefab_cloud_python._internal_constants import LOG_LEVEL_BASE_KEY
+from sdk_reforge._internal_constants import LOG_LEVEL_BASE_KEY
 
 
 class MissingFeatureFlagValueException(Exception):

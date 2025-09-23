@@ -4,10 +4,10 @@ from typing import Optional
 
 import pytest
 
-from prefab_cloud_python import Options
-from prefab_cloud_python.config_resolver import ConfigResolver
-from prefab_cloud_python.constants import ContextDictType
-from prefab_cloud_python.context import Context
+from sdk_reforge import Options
+from sdk_reforge.config_resolver import ConfigResolver
+from sdk_reforge.constants import ContextDictType
+from sdk_reforge.context import Context
 
 
 class FakeConfigLoader:
@@ -35,7 +35,7 @@ class ConfigResolverFactoryFixture:
         self.client = None
 
     def create(self, global_context={}, default_context={}) -> ConfigResolver:
-        options = Options(prefab_datasources="LOCAL_ONLY")
+        options = Options(reforge_datasources="LOCAL_ONLY")
         client = FakeClient(options=options)
         config_resolver = ConfigResolver(client, FakeConfigLoader())
         config_resolver.default_context = default_context

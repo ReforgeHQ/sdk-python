@@ -1,16 +1,14 @@
 import logging
 
-from prefab_cloud_python import Options, Client
-from prefab_cloud_python.config_client import MissingDefaultException
+from sdk_reforge import Options, ReforgeSDK as Client
+from sdk_reforge.config_sdk import MissingDefaultException
 import pytest
 
 
 @pytest.fixture
 def client():
     options = Options(
-        prefab_config_classpath_dir="tests",
-        prefab_envs=["unit_tests"],
-        prefab_datasources="LOCAL_ONLY",
+        x_datafile="tests/test.datafile.json",
         collect_sync_interval=None,
     )
     client_instance = Client(options)
@@ -20,8 +18,7 @@ def client():
 
 class TestClient:
     def test_get(self, client):
-        assert client.get("sample") == "test sample value"
-        assert client.get("sample_int") == 123
+        assert client.get("flag_with_a_value") == "all-features"
 
     def test_get_with_default(self, client):
         assert not client.get("false_value", default="red")
@@ -124,11 +121,4 @@ class TestClient:
         assert not client.enabled("flag_with_a_value")
         assert client.get("flag_with_a_value") == "all-features"
 
-    def test_loglevel(self, client):
-        assert client.get_loglevel("") == logging.WARNING
-        assert client.get_loglevel("app") == logging.ERROR
-        assert client.get_loglevel("app.controller") == logging.ERROR
-        assert client.get_loglevel("app.controller.hello") == logging.WARNING
-        assert client.get_loglevel("app.controller.hello.index") == logging.INFO
-        assert client.get_loglevel("app.controller.hello.index.store") == logging.INFO
-        assert client.get_loglevel("app.controller.hello.edit") == logging.WARN
+    # Logging functionality removed - test_loglevel method removed

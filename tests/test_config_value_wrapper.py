@@ -1,4 +1,4 @@
-from prefab_cloud_python.config_value_wrapper import ConfigValueWrapper
+from sdk_reforge.config_value_wrapper import ConfigValueWrapper
 import prefab_pb2 as Prefab
 
 

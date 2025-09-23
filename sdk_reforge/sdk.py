@@ -12,7 +12,7 @@ from .feature_flag_sdk import FeatureFlagSDK
 from .options import Options
 from ._requests import TimeoutHTTPAdapter, VersionHeader, Version
 from typing import Optional, Union
-import reforge_pb2 as Reforge
+import prefab_pb2 as Prefab
 import uuid
 import requests
 from urllib.parse import urljoin
@@ -20,6 +20,7 @@ from .constants import (
     NoDefaultProvided,
     ConfigValueType,
     ContextDictOrContext,
+    PostBodyType,
 )
 
 logger = InternalLogger(__name__)
@@ -37,7 +38,7 @@ class ReforgeSDK:
         self.telemetry_manager = TelemetryManager(self, options)
         if not options.is_local_only():
             self.telemetry_manager.start_periodic_sync()
-        self.api_urls = options.prefab_api_urls
+        self.api_urls = options.reforge_api_urls
         # Define the retry strategy
         retry_strategy = Retry(
             total=2,  # Maximum number of retries
@@ -55,7 +56,7 @@ class ReforgeSDK:
             logger.info(
                 f"Prefab {Version} connecting to %s, secure %s"
                 % (
-                    options.prefab_api_urls,
+                    options.reforge_api_urls,
                     options.http_secure,
                 ),
             )
@@ -104,13 +105,13 @@ class ReforgeSDK:
         return Context.scope(context)
 
     @functools.cache
-    def config_sdk(self) -> ConfigClient:
-        client = ConfigClient(self)
+    def config_sdk(self) -> ConfigSDK:
+        client = ConfigSDK(self)
         return client
 
     @functools.cache
-    def feature_flag_sdk(self) -> FeatureFlagClient:
-        return FeatureFlagClient(self)
+    def feature_flag_sdk(self) -> FeatureFlagSDK:
+        return FeatureFlagSDK(self)
 
     def post(self, path: str, body: PostBodyType) -> requests.models.Response:
         headers = {

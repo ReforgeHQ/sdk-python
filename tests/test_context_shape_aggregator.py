@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 
-from prefab_cloud_python.context import Context
+from sdk_reforge.context import Context
 import prefab_pb2 as Prefab
 from datetime import date
 
-from prefab_cloud_python.context_shape_aggregator import ContextShapeAggregator
+from sdk_reforge.context_shape_aggregator import ContextShapeAggregator
 from tests.helpers import sort_proto_context_shape
 
 DOB = date.today()

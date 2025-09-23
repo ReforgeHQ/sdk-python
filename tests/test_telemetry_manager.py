@@ -1,8 +1,8 @@
 import prefab_pb2 as Prefab
-from prefab_cloud_python import Options
-from prefab_cloud_python._telemetry import TelemetryManager
-from prefab_cloud_python.config_resolver import Evaluation
-from prefab_cloud_python.context import Context
+from sdk_reforge import Options
+from sdk_reforge._telemetry import TelemetryManager
+from sdk_reforge.config_resolver import Evaluation
+from sdk_reforge.context import Context
 import pytest
 
 from tests.helpers import (
@@ -38,12 +38,9 @@ def options() -> Options:
         collect_evaluation_summaries=True,
         context_upload_mode=Options.ContextUploadMode.PERIODIC_EXAMPLE,
         collect_sync_interval=10,
-        prefab_datasources="LOCAL_ONLY",
-        collect_logs=True,
+        reforge_datasources="LOCAL_ONLY",
     )
-    options.prefab_api_url = "http://api.staging-prefab.cloud"
-    options.collect_logs = True
-    options.collect_max_paths = 1000
+    # Telemetry test with local only config
     return options
 
 
@@ -81,15 +78,12 @@ def test_telemetry(options: Options, telemetry_manager: TelemetryManager):
             context=EXAMPLE_CONTEXT2,
         )
     )
-    telemetry_manager.record_log("some/path", Prefab.LogLevel.INFO)
-    telemetry_manager.record_log("another/path", Prefab.LogLevel.WARN)
-
     telemetry_manager.flush_and_block()
     assert len(mock_client.posts) == 1
 
     post_url, uploaded_telemetry_proto = mock_client.posts[0]
 
-    assert len(uploaded_telemetry_proto.events) == 4
+    assert len(uploaded_telemetry_proto.events) == 3
 
     telemetry_events_by_type = get_telemetry_events_by_type(uploaded_telemetry_proto)
 
@@ -97,7 +91,6 @@ def test_telemetry(options: Options, telemetry_manager: TelemetryManager):
         "summaries": 1,
         "example_contexts": 1,
         "context_shapes": 1,
-        "loggers": 1,
     }
 
     config_evaluation_summary = telemetry_events_by_type["summaries"][0]
