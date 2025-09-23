@@ -49,12 +49,12 @@ class ReforgeSDK:
         adapter = TimeoutHTTPAdapter(max_retries=retry_strategy, timeout=5)
         self.session = requests.Session()
         self.session.mount("https://", adapter)
-        self.session.headers.update({VersionHeader: f"prefab-cloud-python-{Version}"})
+        self.session.headers.update({VersionHeader: f"sdk-python-{Version}"})
         if options.is_local_only():
-            logger.info(f"Prefab {Version} running in local-only mode")
+            logger.info(f"Reforge SDK {Version} running in local-only mode")
         else:
             logger.info(
-                f"Prefab {Version} connecting to %s, secure %s"
+                f"Reforge SDK {Version} connecting to %s, secure %s"
                 % (
                     options.reforge_api_urls,
                     options.http_secure,

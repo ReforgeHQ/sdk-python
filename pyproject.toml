@@ -10,6 +10,7 @@ homepage = "https://www.reforge.com"
 repository = "https://github.com/ReforgeHQ/sdk-python"
 documentation = "https://docs.reforge.com/docs/sdks/python"
 packages = [{include = "sdk_reforge"}, {include = "reforge_pb2.py"}]
+include = ["sdk_reforge/VERSION"]
 
 [tool.poetry.dependencies]
 cryptography = ">= 42.0.0"

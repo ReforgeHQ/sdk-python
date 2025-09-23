@@ -18,15 +18,20 @@ from tenacity import (
 )
 
 logger = InternalLogger(__name__)
-try:
-    from importlib.metadata import version
+import os
 
-    Version = version("reforge-python")
-except importlib.metadata.PackageNotFoundError:
-    Version = "development"
+def _get_version():
+    try:
+        version_file = os.path.join(os.path.dirname(__file__), "VERSION")
+        with open(version_file, "r") as f:
+            return f.read().strip()
+    except (FileNotFoundError, IOError):
+        return "development"
+
+Version = _get_version()
 
 
-VersionHeader = "X-Reforge-Client-Version"
+VersionHeader = "X-Reforge-SDK-Version"
 
 DEFAULT_TIMEOUT = 5  # seconds
 
