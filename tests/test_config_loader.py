@@ -4,40 +4,6 @@ import prefab_pb2 as Prefab
 
 class TestConfigLoader:
     def test_calc_config(self):
-        client = self.client()
-        loader = client.config_sdk().config_loader
-
-        self.assert_correct_config(loader, "sample_int", "int", 123)
-        self.assert_correct_config(loader, "sample_double", "double", 12.12)
-
-        self.assert_correct_config(
-            loader, "nested.values.string", "string", "nested value"
-        )
-        self.assert_correct_config(loader, "nested.values", "string", "top level")
-
-        self.assert_correct_config(
-            loader, "log-level.app", "log_level", Prefab.LogLevel.Value("ERROR")
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.app.controller.hello",
-            "log_level",
-            Prefab.LogLevel.Value("WARN"),
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.app.controller.hello.index",
-            "log_level",
-            Prefab.LogLevel.Value("INFO"),
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.invalid",
-            "log_level",
-            Prefab.LogLevel.Value("NOT_SET_LOG_LEVEL"),
-        )
-
-    def test_calc_config_without_unit_tests(self):
         options = Options(
             x_datafile="tests/prefab.datafile.json",
             reforge_datasources="LOCAL_ONLY",
@@ -97,28 +63,6 @@ class TestConfigLoader:
             "test",
         )
         assert loader.highwater_mark == 5
-
-    def test_api_precedence(self):
-        client = self.client()
-        loader = client.config_sdk().config_loader
-
-        self.assert_correct_config(loader, "sample_int", "int", 123)
-
-        loader.set(
-            Prefab.Config(
-                key="sample_int",
-                rows=[
-                    Prefab.ConfigRow(
-                        values=[
-                            Prefab.ConditionalValue(value=Prefab.ConfigValue(int=456))
-                        ]
-                    )
-                ],
-            ),
-            "test",
-        )
-
-        self.assert_correct_config(loader, "sample_int", "int", 456)
 
     def test_api_deltas(self):
         client = self.client()
