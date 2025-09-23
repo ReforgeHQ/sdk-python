@@ -1,5 +1,5 @@
-from reforge_python.config_resolver import CriteriaEvaluator
-from reforge_python.context import Context
+from sdk_reforge.config_resolver import CriteriaEvaluator
+from sdk_reforge.context import Context
 import reforge_pb2 as Prefab
 from datetime import datetime, timezone, timedelta
 from unittest.mock import patch

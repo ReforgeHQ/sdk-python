@@ -4,8 +4,8 @@ from unittest.mock import patch
 import pytest
 import yaml
 
-from reforge_python import Options, ReforgeSDK
-from reforge_python.context import Context
+from sdk_reforge import Options, ReforgeSDK
+from sdk_reforge.context import Context
 import reforge_pb2 as Reforge
 from prefab_cloud_python.config_client import (
     InitializationTimeoutException,

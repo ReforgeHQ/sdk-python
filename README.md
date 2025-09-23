@@ -9,8 +9,8 @@ Python client for reforge.com, providing Config, FeatureFlags as a Service
 ## Example usage
 
 ```python
-from reforge_python import ReforgeSDK, Options
-import reforge_python
+from sdk_reforge import ReforgeSDK, Options
+import sdk_reforge
 
 options = Options(
     sdk_key="your-reforge-api-key"
@@ -26,9 +26,9 @@ context = {
 }
 
 
-reforge_python.set_options(options)
+sdk_reforge.set_options(options)
 
-result = reforge_python.get_sdk().enabled("my-first-feature-flag", context=context)
+result = sdk_reforge.get_sdk().enabled("my-first-feature-flag", context=context)
 
 print("my-first-feature-flag is:", result)
 ```
@@ -38,7 +38,7 @@ print("my-first-feature-flag is:", result)
 If you need to work with the underlying Protocol Buffer types, the following are re-exported for convenience:
 
 ```python
-from reforge_python import ConfigValue, StringList, ProtoContext, ContextSet, ContextShape, LogLevel, Json, Schema
+from sdk_reforge import ConfigValue, StringList, ProtoContext, ContextSet, ContextShape, LogLevel, Json, Schema
 
 # Create a config value
 config_value = ConfigValue(string="example value")

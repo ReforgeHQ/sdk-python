@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import reforge_pb2 as Reforge
-from reforge_python import Options
+from sdk_reforge import Options
 
 
 class ConfigSDKInterface(ABC):
