@@ -1,10 +1,10 @@
 """
-Prefab Cloud Python client library.
+Reforge Python client library.
 
-This module provides access to the Prefab Cloud configuration and feature flag service.
+This module provides access to the Reforge configuration and feature flag service.
 
 Main components:
-- Client: The main client for interacting with Prefab Cloud
+- Client: The main client for interacting with Reforge
 - Options: Configuration options for the client
 - Context: Context information for evaluating configs and feature flags
 
@@ -38,8 +38,8 @@ from .constants import (
 )
 
 # Re-export Protocol Buffer types for easier access
-import prefab_pb2
-from prefab_pb2 import (
+import reforge_pb2
+from reforge_pb2 import (
     ConfigValue,
     StringList,
     Context as ProtoContext,
@@ -77,7 +77,7 @@ def get_client() -> Client:
             raise Exception("Options has not been set")
         if not __base_client:
             log.info(
-                f"Initializing Prefab client version f{version('prefab-cloud-python')}"
+                f"Initializing Reforge client version {version('reforge-python')}"
             )
             __base_client = Client(__options)
             return __base_client

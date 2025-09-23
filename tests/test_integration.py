@@ -71,7 +71,7 @@ def build_options_with_overrides(options, overrides, global_context):
     return options
 
 
-TEST_PATH = "./tests/prefab-cloud-integration-test-data/tests/current/"
+TEST_PATH = "./tests/shared-integration-test-data/tests/current/"
 
 
 @pytest.fixture
