@@ -13,7 +13,7 @@ from reforge_python import ReforgeSDK, Options
 import reforge_python
 
 options = Options(
-    reforge_api_key="your-reforge-api-key"
+    sdk_key="your-reforge-api-key"
 )
 
 context = {

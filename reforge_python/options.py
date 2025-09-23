@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import os
 from enum import Enum
 from urllib.parse import urlparse
@@ -59,7 +58,7 @@ class Options:
 
     def __init__(
         self,
-        api_key: Optional[str] = None,
+        sdk_key: Optional[str] = None,
         reforge_api_urls: Optional[list[str]] = None,
         reforge_stream_urls: Optional[list[str]] = None,
         reforge_telemetry_url: Optional[str] = None,
@@ -70,19 +69,16 @@ class Options:
         on_connection_failure: str = "RETURN",
         x_use_local_cache: bool = False,
         x_datafile: Optional[str] = None,
-        collect_logs: bool = True,
-        collect_max_paths: int = 1000,
         collect_max_shapes: int = 10_000,
         collect_sync_interval: Optional[int] = 30,
         collect_evaluation_summaries: bool = True,
         context_upload_mode: ContextUploadMode = ContextUploadMode.PERIODIC_EXAMPLE,
-        bootstrap_loglevel: Optional[int] = None,
         global_context: Optional[ContextDictType | Context] = None,
         on_ready_callback: Optional[Callable[[], None]] = None,
     ) -> None:
         self.reforge_datasources = Options.__validate_datasource(reforge_datasources)
         self.datafile = x_datafile
-        self.__set_api_key(api_key or os.environ.get("REFORGE_SDK_KEY") or os.environ.get("PREFAB_API_KEY"))
+        self.__set_api_key(sdk_key or os.environ.get("REFORGE_SDK_KEY") or os.environ.get("PREFAB_API_KEY"))
         self.__set_api_url(
             reforge_api_urls
             or self.api_urls_from_env()
@@ -103,16 +99,10 @@ class Options:
         self.use_local_cache = x_use_local_cache
         self.__set_on_no_default(on_no_default)
         self.__set_on_connection_failure(on_connection_failure)
-        self.__set_log_collection(collect_logs, collect_max_paths, self.is_local_only())
         self.collect_sync_interval = collect_sync_interval
         self.collect_max_shapes = collect_max_shapes
         self.context_upload_mode = context_upload_mode
         self.collect_evaluation_summaries = collect_evaluation_summaries
-        self.bootstrap_loglevel = (
-            os.environ.get("REFORGE_LOG_CLIENT_BOOTSTRAP_LOG_LEVEL")
-            or bootstrap_loglevel
-            or logging.WARNING
-        )
         self.global_context = Context.normalize_context_arg(global_context)
         self.on_ready_callback = on_ready_callback
 
@@ -219,11 +209,3 @@ class Options:
         else:
             self.on_connection_failure = "RETURN"
 
-    def __set_log_collection(
-        self, collect_logs: bool, collect_max_paths: int, is_local_only: bool
-    ) -> None:
-        self.collect_logs = collect_logs
-        if not collect_logs or is_local_only:
-            self.collect_max_paths = 0
-        else:
-            self.collect_max_paths = collect_max_paths
