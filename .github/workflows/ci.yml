@@ -48,4 +48,4 @@ jobs:
       - name: Run tests
         run: poetry run pytest -k 'not integration'
         env:
-          PREFAB_INTEGRATION_TEST_API_KEY: ${{ secrets.PREFAB_INTEGRATION_TEST_API_KEY }}
+          REFORGE_INTEGRATION_TEST_SDK_KEY: ${{ secrets.REFORGE_INTEGRATION_TEST_SDK_KEY }}

@@ -1,13 +1,12 @@
-import logging
 import os
 from unittest.mock import patch
 
 import pytest
 import yaml
 
-from prefab_cloud_python import Options, Client
-from prefab_cloud_python.context import Context
-import prefab_pb2 as Prefab
+from reforge_python import Options, ReforgeSDK
+from reforge_python.context import Context
+import reforge_pb2 as Reforge
 from prefab_cloud_python.config_client import (
     InitializationTimeoutException,
     MissingDefaultException,
@@ -20,7 +19,7 @@ from prefab_cloud_python.config_value_wrapper import ConfigValueWrapper
 from prefab_cloud_python.encryption import DecryptionException
 from tests.helpers import get_telemetry_events_by_type, sort_proto_loggers
 
-LLV = Prefab.LogLevel.Value
+LLV = Reforge.LogLevel.Value
 
 CustomExceptions = {
     "unable_to_decrypt": DecryptionException,
@@ -77,15 +76,14 @@ TEST_PATH = "./tests/shared-integration-test-data/tests/current/"
 @pytest.fixture
 def options():
     return Options(
-        api_key=os.environ["PREFAB_INTEGRATION_TEST_API_KEY"],
-        prefab_api_urls=[
+        sdk_key=os.environ["REFORGE_INTEGRATION_TEST_SDK_KEY"],
+        reforge_api_urls=[
             "https://primary.goatsofreforge.com",
             "https://secondary.goatsofreforge.com",
         ],
         reforge_stream_urls = ["https://stream.goatsofreforge.com"],
-        prefab_telemetry_url="https://telemetry.goatsofreforge.com",
+        reforge_telemetry_url="https://telemetry.goatsofreforge.com",
         collect_sync_interval=None,
-        bootstrap_loglevel=logging.INFO,
     )
 
 
@@ -129,7 +127,7 @@ def run_test(
         case.get("client_overrides"),
         global_context=case.get("contexts", {}).get("global"),
     )
-    with Client(options) as client:
+    with ReforgeSDK(options) as client:
         block_context = case.get("contexts", {}).get("block")
         if block_context:
             Context.set_current(Context(block_context))
@@ -172,7 +170,7 @@ def run_telemetry_test(test, options, global_context=None):
     local_context = case.get("contexts", {}).get("local")
     if local_context:
         raise RuntimeError("local_context not supported yet in telemetry test")
-    client = Client(options)
+    client = ReforgeSDK(options)
     with patch.object(client, "post", wraps=client.post) as spy_method:
         if case["aggregator"] == "log_path":
             run_logging_telemetry_test(test, case, client, spy_method)
@@ -209,7 +207,7 @@ def run_context_shape_telemetry_test(test, case, client, spy_post_method):
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     expected_shapes = [
-        Prefab.ContextShape(name=item["name"], field_types=item["field_types"])
+        Reforge.ContextShape(name=item["name"], field_types=item["field_types"])
         for item in case["expected_data"]
     ]
     assert url == "/api/v1/telemetry/"
@@ -258,7 +256,7 @@ def clear_config_ids_and_sort(summary_list):
 def build_loggers_expected_data(expected_data):
     loggers_expected_data = []
     for logger_data in expected_data:
-        current_logger = Prefab.Logger(logger_name=logger_data["logger_name"])
+        current_logger = Reforge.Logger(logger_name=logger_data["logger_name"])
         for level, count in logger_data["counts"].items():
             setattr(current_logger, level, count)
         loggers_expected_data.append(current_logger)
@@ -269,7 +267,7 @@ def build_evaluation_summary_expected_data(expected_data):
     summaries = []
     for expected_datum in expected_data:
         counts = [
-            Prefab.ConfigEvaluationCounter(
+            Reforge.ConfigEvaluationCounter(
                 count=expected_datum["count"],
                 config_row_index=expected_datum["summary"]["config_row_index"],
                 conditional_value_index=expected_datum["summary"][
@@ -282,7 +280,7 @@ def build_evaluation_summary_expected_data(expected_data):
             )
         ]
         summaries.append(
-            Prefab.ConfigEvaluationSummary(
+            Reforge.ConfigEvaluationSummary(
                 key=expected_datum["key"], type=expected_datum["type"], counters=counts
             )
         )
