@@ -79,10 +79,11 @@ def options():
     return Options(
         api_key=os.environ["PREFAB_INTEGRATION_TEST_API_KEY"],
         prefab_api_urls=[
-            "https://belt.staging-prefab.cloud",
-            "https://suspenders.staging-prefab.cloud",
+            "https://primary.goatsofreforge.com",
+            "https://secondary.goatsofreforge.com",
         ],
-        prefab_telemetry_url="https://telemetry.staging-prefab.cloud",
+        reforge_stream_urls = ["https://stream.goatsofreforge.com"],
+        prefab_telemetry_url="https://telemetry.goatsofreforge.com",
         collect_sync_interval=None,
         bootstrap_loglevel=logging.INFO,
     )
