@@ -54,8 +54,8 @@ class TestSSEConnectionManager(unittest.TestCase):
         mock_sleep.assert_has_calls(expected_calls, any_order=False)
 
         self.api_client.resilient_request.assert_called_with(
-            "/api/v1/sse/config",
-            headers={"x-prefab-start-at-id": "123", "accept": "text/event-stream"},
+            "/api/v2/sse/config",
+            headers={"Last-Event-ID": "123", "accept": "text/event-stream"},
             stream=True,
             auth=("authuser", "test_api_key"),
             timeout=(5, 60),
@@ -110,8 +110,8 @@ class TestSSEConnectionManager(unittest.TestCase):
         mock_sleep.assert_has_calls(expected_calls, any_order=False)
 
         self.api_client.resilient_request.assert_called_with(
-            "/api/v1/sse/config",
-            headers={"x-prefab-start-at-id": "123", "accept": "text/event-stream"},
+            "/api/v2/sse/config",
+            headers={"Last-Event-ID": "123", "accept": "text/event-stream"},
             stream=True,
             auth=("authuser", "test_api_key"),
             timeout=(5, 60),
@@ -149,8 +149,8 @@ class TestSSEConnectionManager(unittest.TestCase):
 
         mock_sleep.assert_has_calls(expected_calls, any_order=False)
         self.api_client.resilient_request.assert_called_with(
-            "/api/v1/sse/config",
-            headers={"x-prefab-start-at-id": "123", "accept": "text/event-stream"},
+            "/api/v2/sse/config",
+            headers={"Last-Event-ID": "123", "accept": "text/event-stream"},
             stream=True,
             auth=("authuser", "test_api_key"),
             timeout=(5, 60),
@@ -202,8 +202,8 @@ class TestSSEConnectionManager(unittest.TestCase):
 
         mock_sleep.assert_has_calls(expected_calls, any_order=False)
         self.api_client.resilient_request.assert_called_with(
-            "/api/v1/sse/config",
-            headers={"x-prefab-start-at-id": "123", "accept": "text/event-stream"},
+            "/api/v2/sse/config",
+            headers={"Last-Event-ID": "123", "accept": "text/event-stream"},
             stream=True,
             auth=("authuser", "test_api_key"),
             timeout=(5, 60),
