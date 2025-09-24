@@ -1,0 +1,188 @@
+{
+  "configs": [
+    {
+      "id": "1001",
+      "projectId": "350",
+      "key": "sample_int",
+      "configType": "CONFIG",
+      "valueType": "INT",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "int": 123
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1002",
+      "projectId": "350",
+      "key": "sample_double",
+      "configType": "CONFIG",
+      "valueType": "DOUBLE",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "double": 12.12
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1003",
+      "projectId": "350",
+      "key": "false_value",
+      "configType": "CONFIG",
+      "valueType": "BOOL",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "bool": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1004",
+      "projectId": "350",
+      "key": "zero_value",
+      "configType": "CONFIG",
+      "valueType": "INT",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "int": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1005",
+      "projectId": "350",
+      "key": "enabled_flag",
+      "configType": "FEATURE_FLAG",
+      "valueType": "BOOL",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "bool": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1006",
+      "projectId": "350",
+      "key": "disabled_flag",
+      "configType": "FEATURE_FLAG",
+      "valueType": "BOOL",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "bool": false
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1007",
+      "projectId": "350",
+      "key": "flag_with_a_value",
+      "configType": "FEATURE_FLAG",
+      "valueType": "STRING",
+      "rows": [
+        {
+          "values": [
+            {
+              "value": {
+                "string": "all-features"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1008",
+      "projectId": "350",
+      "key": "user_key_match",
+      "configType": "FEATURE_FLAG",
+      "valueType": "BOOL",
+      "rows": [
+        {
+          "values": [
+            {
+              "criteria": [
+                {
+                  "operator": "PROP_IS_ONE_OF",
+                  "propertyName": "user.key",
+                  "valueToMatch": {
+                    "stringList": {
+                      "values": ["abc123", "xyz987"]
+                    }
+                  }
+                }
+              ],
+              "value": {
+                "bool": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "1009",
+      "projectId": "350",
+      "key": "just_my_domain",
+      "configType": "FEATURE_FLAG",
+      "valueType": "STRING",
+      "rows": [
+        {
+          "values": [
+            {
+              "criteria": [
+                {
+                  "operator": "PROP_IS_ONE_OF",
+                  "propertyName": "user.domain",
+                  "valueToMatch": {
+                    "stringList": {
+                      "values": ["prefab.cloud", "example.com"]
+                    }
+                  }
+                }
+              ],
+              "value": {
+                "string": "new-version"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

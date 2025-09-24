@@ -11,7 +11,7 @@ import os
 from ._count_down_latch import CountDownLatch
 from ._requests import ApiClient, UnauthorizedException
 from ._sse_connection_manager import SSEConnectionManager
-from .config_client_interface import ConfigClientInterface
+from .config_sdk_interface import ConfigSDKInterface
 from .config_loader import ConfigLoader
 from .config_resolver import ConfigResolver
 from .config_value_unwrapper import ConfigValueUnwrapper
@@ -30,7 +30,7 @@ logger = InternalLogger(__name__)
 class InitializationTimeoutException(Exception):
     def __init__(self, timeout_seconds, key):
         super().__init__(
-            f"Prefab couldn't initialize in {timeout_seconds} second timeout. Trying to fetch key `{key}`."
+            f"Reforge couldn't initialize in {timeout_seconds} second timeout. Trying to fetch key `{key}`."
         )
 
 
@@ -42,7 +42,7 @@ If you'd prefer returning `None` rather than raising when this occurs, modify th
         )
 
 
-class ConfigClient(ConfigClientInterface):
+class ConfigSDK(ConfigSDKInterface):
     def __init__(self, base_client):
         self.is_initialized = threading.Event()
         self.checkpointing_thread = None
@@ -61,7 +61,7 @@ class ConfigClient(ConfigClientInterface):
         self.set_cache_path()
         self.api_client = ApiClient(self.options)
         self.sse_connection_manager = SSEConnectionManager(
-            self.api_client, self, self.options.prefab_stream_urls
+            self.api_client, self, self.options.reforge_stream_urls
         )
 
         if self.options.is_local_only():
@@ -159,7 +159,7 @@ class ConfigClient(ConfigClientInterface):
         try:
             hwm = self.config_loader.highwater_mark
             response = self.api_client.resilient_request(
-                "/api/v1/configs/" + str(hwm),
+                "/api/v2/configs/" + str(hwm),
                 auth=("authuser", self.options.api_key),
                 timeout=4,
                 allow_cache=True,

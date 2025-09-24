@@ -4,7 +4,7 @@ ignore = [
 ]
 
 [isort]
-known-first-party = ["prefab_cloud_python", "prefab_pb2", "prefab_pb2_grpc", "tests"]
+known-first-party = ["sdk_reforge", "prefab_pb2", "tests"]
 force-single-line = true
 required-imports = ["from __future__ import annotations"]
 

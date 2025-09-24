@@ -1,7 +1,7 @@
 from collections import namedtuple
 import pytest
 
-from prefab_cloud_python.semantic_version import SemanticVersion
+from sdk_reforge.semantic_version import SemanticVersion
 
 
 class TestSemanticVersion:

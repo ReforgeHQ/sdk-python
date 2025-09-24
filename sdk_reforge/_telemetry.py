@@ -21,7 +21,6 @@ from .config_resolver import Evaluation
 from collections import defaultdict
 
 from .context_shape_aggregator import ContextShapeAggregator
-from .log_path_aggregator import LogPathAggregator
 from ._internal_logging import InternalLogger
 
 logger = InternalLogger(__name__)
@@ -78,7 +77,7 @@ class TelemetryManager(object):
         self.collect_context_shapes = (
             options.context_upload_mode != Options.ContextUploadMode.NONE
         )
-        self.collect_logs = options.collect_logs
+        self.collect_logs = False  # Logging removed
         self.sync_started = False
         self.event_processor = TelemetryEventProcessor(
             base_client=self.client,
@@ -93,7 +92,6 @@ class TelemetryManager(object):
         self.context_shape_aggregator = ContextShapeAggregator(
             max_shapes=options.collect_max_shapes
         )
-        self.log_path_aggregator = LogPathAggregator(options.collect_max_paths)
         self.listeners = []
 
     def start_periodic_sync(self) -> None:

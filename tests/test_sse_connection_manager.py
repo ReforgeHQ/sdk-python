@@ -4,11 +4,11 @@ from unittest.mock import Mock, patch, call
 from requests import HTTPError
 
 # Import from the correct module
-from prefab_cloud_python._sse_connection_manager import (
+from sdk_reforge._sse_connection_manager import (
     SSEConnectionManager,
     MIN_BACKOFF_TIME,
 )
-from prefab_cloud_python._requests import UnauthorizedException
+from sdk_reforge._requests import UnauthorizedException
 
 
 class TestSSEConnectionManager(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestSSEConnectionManager(unittest.TestCase):
             self.api_client, self.config_client, ["https://stream.test-prefab.cloud"]
         )
 
-    @patch("prefab_cloud_python._sse_connection_manager.time.sleep")
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
     def test_backoff_on_failed_response(self, mock_sleep):
         mock_response = Mock()
         mock_response.ok = False
@@ -65,8 +65,8 @@ class TestSSEConnectionManager(unittest.TestCase):
         # Check that resilient_request was called three times
         self.assertEqual(self.api_client.resilient_request.call_count, 3)
 
-    @patch("prefab_cloud_python._sse_connection_manager.Timing")
-    @patch("prefab_cloud_python._sse_connection_manager.time.sleep")
+    @patch("sdk_reforge._sse_connection_manager.Timing")
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
     def test_backoff_on_too_quick_connection(self, mock_sleep, mock_timing):
         self.sse_manager = SSEConnectionManager(
             self.api_client, self.config_client, ["https://stream.test-prefab.cloud"]
@@ -118,7 +118,7 @@ class TestSSEConnectionManager(unittest.TestCase):
             hosts=["https://stream.test-prefab.cloud"],
         )
 
-    @patch("prefab_cloud_python._sse_connection_manager.time.sleep")
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
     def test_backoff_on_unauthorized_exception(self, mock_sleep):
         self.config_client.continue_connection_processing.side_effect = [True, False]
         self.api_client.resilient_request.side_effect = UnauthorizedException("the key")
@@ -128,7 +128,7 @@ class TestSSEConnectionManager(unittest.TestCase):
         self.config_client.handle_unauthorized_response.assert_called_once()
         mock_sleep.assert_not_called()
 
-    @patch("prefab_cloud_python._sse_connection_manager.time.sleep")
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
     def test_backoff_on_general_exception(self, mock_sleep):
         self.api_client.resilient_request.side_effect = Exception("Test exception")
         self.config_client.continue_connection_processing.side_effect = [
@@ -157,8 +157,8 @@ class TestSSEConnectionManager(unittest.TestCase):
             hosts=["https://stream.test-prefab.cloud"],
         )
 
-    @patch("prefab_cloud_python._sse_connection_manager.Timing")
-    @patch("prefab_cloud_python._sse_connection_manager.time.sleep")
+    @patch("sdk_reforge._sse_connection_manager.Timing")
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
     def test_backoff_reset_on_successful_connection(self, mock_sleep, mock_timing):
         self.sse_manager = SSEConnectionManager(
             self.api_client, self.config_client, ["https://stream.test-prefab.cloud"]
@@ -217,15 +217,15 @@ class TestSSEConnectionManager(unittest.TestCase):
         mock_sse_client.events.return_value = [mock_event]
 
         with patch(
-            "prefab_cloud_python._sse_connection_manager.sseclient.SSEClient",
+            "sdk_reforge._sse_connection_manager.sseclient.SSEClient",
             return_value=mock_sse_client,
         ) as mock_sse_client_class:
             with patch(
-                "prefab_cloud_python._sse_connection_manager.base64.b64decode",
+                "sdk_reforge._sse_connection_manager.base64.b64decode",
                 return_value=b"test_decoded",
             ) as mock_b64decode:
                 with patch(
-                    "prefab_cloud_python._sse_connection_manager.Prefab.Configs.FromString"
+                    "sdk_reforge._sse_connection_manager.Prefab.Configs.FromString"
                 ) as mock_from_string:
                     self.config_client.is_shutting_down.return_value = False
                     self.sse_manager.process_response(mock_response)

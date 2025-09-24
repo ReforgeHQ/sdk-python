@@ -46,6 +46,9 @@ jobs:
           poetry install --no-interaction
 
       - name: Run tests
-        run: poetry run pytest -k 'not integration'
+        run: poetry run pytest
         env:
-          PREFAB_INTEGRATION_TEST_API_KEY: ${{ secrets.PREFAB_INTEGRATION_TEST_API_KEY }}
+          REFORGE_INTEGRATION_TEST_SDK_KEY: ${{ secrets.REFORGE_INTEGRATION_TEST_SDK_KEY }}
+          REFORGE_INTEGRATION_TEST_ENCRYPTION_KEY: "c87ba22d8662282abe8a0e4651327b579cb64a454ab0f4c170b45b15f049a221"
+          NOT_A_NUMBER: "not a number"
+          IS_A_NUMBER: 1234

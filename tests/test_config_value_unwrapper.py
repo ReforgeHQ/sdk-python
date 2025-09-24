@@ -1,13 +1,13 @@
-from prefab_cloud_python import Options, Client
-from prefab_cloud_python.config_resolver import Evaluation
-from prefab_cloud_python.config_value_unwrapper import (
+from sdk_reforge import Options, ReforgeSDK as Client
+from sdk_reforge.config_resolver import Evaluation
+from sdk_reforge.config_value_unwrapper import (
     ConfigValueUnwrapper,
     EnvVarParseException,
     MissingEnvVarException,
 )
-from prefab_cloud_python.encryption import Encryption
+from sdk_reforge.encryption import Encryption
 import prefab_pb2 as Prefab
-from prefab_cloud_python.context import Context
+from sdk_reforge.context import Context
 import os
 import pytest
 from contextlib import contextmanager
@@ -40,9 +40,8 @@ class MockResolver:
 
 def client():
     options = Options(
-        prefab_config_classpath_dir="tests",
-        prefab_envs=["unit_tests"],
-        prefab_datasources="LOCAL_ONLY",
+        x_datafile="tests/prefab.datafile.json",
+        reforge_datasources="LOCAL_ONLY",
         collect_sync_interval=None,
     )
     return Client(options)

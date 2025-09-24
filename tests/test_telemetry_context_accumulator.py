@@ -1,7 +1,7 @@
 import prefab_pb2 as Prefab
 
-from prefab_cloud_python.context import Context
-from prefab_cloud_python._telemetry import ContextExampleAccumulator
+from sdk_reforge.context import Context
+from sdk_reforge._telemetry import ContextExampleAccumulator
 
 
 def test_fingerprint():

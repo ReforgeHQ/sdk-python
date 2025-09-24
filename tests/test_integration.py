@@ -1,23 +1,23 @@
-import logging
 import os
+import logging
 from unittest.mock import patch
 
 import pytest
 import yaml
 
-from prefab_cloud_python import Options, Client
-from prefab_cloud_python.context import Context
+from sdk_reforge import Options, ReforgeSDK
+from sdk_reforge.context import Context
 import prefab_pb2 as Prefab
-from prefab_cloud_python.config_client import (
+from sdk_reforge.config_sdk import (
     InitializationTimeoutException,
     MissingDefaultException,
 )
-from prefab_cloud_python.config_value_unwrapper import (
+from sdk_reforge.config_value_unwrapper import (
     EnvVarParseException,
     MissingEnvVarException,
 )
-from prefab_cloud_python.config_value_wrapper import ConfigValueWrapper
-from prefab_cloud_python.encryption import DecryptionException
+from sdk_reforge.config_value_wrapper import ConfigValueWrapper
+from sdk_reforge.encryption import DecryptionException
 from tests.helpers import get_telemetry_events_by_type, sort_proto_loggers
 
 LLV = Prefab.LogLevel.Value
@@ -71,20 +71,20 @@ def build_options_with_overrides(options, overrides, global_context):
     return options
 
 
-TEST_PATH = "./tests/prefab-cloud-integration-test-data/tests/current/"
+TEST_PATH = "./tests/shared-integration-test-data/tests/current/"
 
 
 @pytest.fixture
 def options():
     return Options(
-        api_key=os.environ["PREFAB_INTEGRATION_TEST_API_KEY"],
-        prefab_api_urls=[
-            "https://belt.staging-prefab.cloud",
-            "https://suspenders.staging-prefab.cloud",
+        sdk_key=os.environ["REFORGE_INTEGRATION_TEST_SDK_KEY"],
+        reforge_api_urls=[
+            "https://primary.goatsofreforge.com",
+            "https://secondary.goatsofreforge.com",
         ],
-        prefab_telemetry_url="https://telemetry.staging-prefab.cloud",
+        reforge_stream_urls=["https://stream.goatsofreforge.com"],
+        reforge_telemetry_url="https://telemetry.goatsofreforge.com",
         collect_sync_interval=None,
-        bootstrap_loglevel=logging.INFO,
     )
 
 
@@ -128,7 +128,7 @@ def run_test(
         case.get("client_overrides"),
         global_context=case.get("contexts", {}).get("global"),
     )
-    with Client(options) as client:
+    with ReforgeSDK(options) as client:
         block_context = case.get("contexts", {}).get("block")
         if block_context:
             Context.set_current(Context(block_context))
@@ -171,7 +171,7 @@ def run_telemetry_test(test, options, global_context=None):
     local_context = case.get("contexts", {}).get("local")
     if local_context:
         raise RuntimeError("local_context not supported yet in telemetry test")
-    client = Client(options)
+    client = ReforgeSDK(options)
     with patch.object(client, "post", wraps=client.post) as spy_method:
         if case["aggregator"] == "log_path":
             run_logging_telemetry_test(test, case, client, spy_method)
@@ -204,7 +204,7 @@ def run_logging_telemetry_test(test, case, client, spy_post_method):
 
 def run_context_shape_telemetry_test(test, case, client, spy_post_method):
     context = Context(case["data"])
-    client.config_client().get("some-key", default=10, context=context)
+    client.config_sdk().get("some-key", default=10, context=context)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     expected_shapes = [
@@ -220,7 +220,7 @@ def run_context_shape_telemetry_test(test, case, client, spy_post_method):
 def run_context_instances_telemetry_test(test, case, client, spy_post_method):
     context = Context(case["data"])
     expected_context_proto = Context(case["expected_data"]).to_proto()
-    client.config_client().get("some-key", default=10, context=context)
+    client.config_sdk().get("some-key", default=10, context=context)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     assert url == "/api/v1/telemetry/"
@@ -231,7 +231,7 @@ def run_context_instances_telemetry_test(test, case, client, spy_post_method):
 
 def run_evaluation_summary_telemetry_test(test, case, client, spy_post_method):
     for key in case.get("data", {})["keys"]:
-        client.config_client().get(key)
+        client.config_sdk().get(key)
     client.telemetry_manager.flush_and_block()
     url, telemetry_events = spy_post_method.call_args.args
     assert url == "/api/v1/telemetry/"
@@ -323,18 +323,6 @@ class TestIntegration:
     )
     def test_get_feature_flag(self, options, testcase):
         run_test(testcase, options, input_key="flag")
-
-    @pytest.mark.parametrize(
-        "testcase",
-        load_test_cases_from_file("get_log_level.yaml"),
-        ids=make_id_from_test_case,
-    )
-    def test_get_log_level(self, options, testcase):
-        run_test(
-            testcase,
-            options,
-            expected_modifier=(lambda x: LLV(x)),
-        )
 
     @pytest.mark.parametrize(
         "testcase",

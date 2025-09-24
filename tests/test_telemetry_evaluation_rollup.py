@@ -1,8 +1,8 @@
 import prefab_pb2 as Prefab
-from prefab_cloud_python._telemetry import EvaluationRollup
-from prefab_cloud_python.config_resolver import Evaluation
+from sdk_reforge._telemetry import EvaluationRollup
+from sdk_reforge.config_resolver import Evaluation
 from unittest.mock import patch
-from prefab_cloud_python.context import Context
+from sdk_reforge.context import Context
 import pytest
 
 from tests.helpers import (

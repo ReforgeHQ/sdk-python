@@ -1,4 +1,3 @@
-import importlib
 import re
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -17,16 +16,24 @@ from tenacity import (
     retry_if_exception_type,
 )
 
+import os
+
 logger = InternalLogger(__name__)
-try:
-    from importlib.metadata import version
-
-    Version = version("prefab-cloud-python")
-except importlib.metadata.PackageNotFoundError:
-    Version = "development"
 
 
-VersionHeader = "X-PrefabCloud-Client-Version"
+def _get_version():
+    try:
+        version_file = os.path.join(os.path.dirname(__file__), "VERSION")
+        with open(version_file, "r") as f:
+            return f.read().strip()
+    except (FileNotFoundError, IOError):
+        return "development"
+
+
+Version = _get_version()
+
+
+VersionHeader = "X-Reforge-SDK-Version"
 
 DEFAULT_TIMEOUT = 5  # seconds
 
@@ -119,13 +126,13 @@ class ApiClient:
             - prefab_api_urls: list of API host URLs (e.g. ["https://a.example.com", "https://b.example.com"])
             - version: version string
         """
-        self.hosts = options.prefab_api_urls
+        self.hosts = options.reforge_api_urls
         self.session = requests.Session()
         self.session.mount("https://", requests.adapters.HTTPAdapter())
         self.session.mount("http://", requests.adapters.HTTPAdapter())
         self.session.headers.update(
             {
-                "X-PrefabCloud-Client-Version": f"prefab-cloud-python-{getattr(options, 'version', 'development')}"
+                "X-Reforge-Client-Version": f"reforge-python-{getattr(options, 'version', 'development')}"
             }
         )
         # Initialize a cache (here with a maximum of 2 entries).

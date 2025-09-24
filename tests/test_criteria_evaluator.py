@@ -1,5 +1,5 @@
-from prefab_cloud_python.config_resolver import CriteriaEvaluator
-from prefab_cloud_python.context import Context
+from sdk_reforge.config_resolver import CriteriaEvaluator
+from sdk_reforge.context import Context
 import prefab_pb2 as Prefab
 from datetime import datetime, timezone, timedelta
 from unittest.mock import patch
@@ -1070,6 +1070,100 @@ class TestCriteriaEvaluator:
                                 Prefab.Criterion(
                                     operator=Prefab.Criterion.CriterionOperator.PROP_AFTER,
                                     property_name="prefab.current-time",
+                                    value_to_match=Prefab.ConfigValue(
+                                        int=past_time_millis
+                                    ),
+                                )
+                            ],
+                            value=Prefab.ConfigValue(string=desired_value),
+                        )
+                    ],
+                ),
+            ],
+        )
+
+        with patch("time.time") as mock_time:
+            # Set the mock to return our test time
+            mock_time.return_value = test_time.timestamp()
+
+            evaluator = CriteriaEvaluator(
+                config, project_env_id, resolver=None, base_client=None
+            )
+            evaluator_past = CriteriaEvaluator(
+                config_past, project_env_id, resolver=None, base_client=None
+            )
+
+            # Test current time is before future time
+            evaluation = evaluator.evaluate(context({}))
+            assert evaluation.raw_config_value().string == desired_value
+
+            # Test current time is after past time
+            evaluation = evaluator_past.evaluate(context({}))
+            assert evaluation.raw_config_value().string == desired_value
+
+            # Test with a different time that's after the future time
+            mock_time.return_value = (
+                future_time.timestamp() + 3600
+            )  # 1 hour after future_time
+            evaluation = evaluator.evaluate(context({}))
+            assert evaluation.raw_config_value().string == default_value
+
+            # Test with a different time that's before the past time
+            mock_time.return_value = (
+                past_time.timestamp() - 3600
+            )  # 1 hour before past_time
+            evaluation = evaluator_past.evaluate(context({}))
+            assert evaluation.raw_config_value().string == default_value
+
+    def test_reforge_current_time(self):
+        # Set up a fixed time for testing
+        test_time = datetime(2024, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+        int(test_time.timestamp() * 1000)
+
+        # Create a config that checks if current time is before a future time
+        future_time = test_time + timedelta(hours=1)
+        future_time_millis = int(future_time.timestamp() * 1000)
+
+        config = Prefab.Config(
+            key=key,
+            rows=[
+                default_row,
+                Prefab.ConfigRow(
+                    project_env_id=project_env_id,
+                    values=[
+                        Prefab.ConditionalValue(
+                            criteria=[
+                                Prefab.Criterion(
+                                    operator=Prefab.Criterion.CriterionOperator.PROP_BEFORE,
+                                    property_name="reforge.current-time",
+                                    value_to_match=Prefab.ConfigValue(
+                                        int=future_time_millis
+                                    ),
+                                )
+                            ],
+                            value=Prefab.ConfigValue(string=desired_value),
+                        )
+                    ],
+                ),
+            ],
+        )
+
+        # Create a config that checks if current time is after a past time
+        past_time = test_time - timedelta(hours=1)
+        past_time_millis = int(past_time.timestamp() * 1000)
+
+        config_past = Prefab.Config(
+            key=key,
+            rows=[
+                default_row,
+                Prefab.ConfigRow(
+                    project_env_id=project_env_id,
+                    values=[
+                        Prefab.ConditionalValue(
+                            criteria=[
+                                Prefab.Criterion(
+                                    operator=Prefab.Criterion.CriterionOperator.PROP_AFTER,
+                                    property_name="reforge.current-time",
                                     value_to_match=Prefab.ConfigValue(
                                         int=past_time_millis
                                     ),

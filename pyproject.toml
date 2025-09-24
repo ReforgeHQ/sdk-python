@@ -1,15 +1,16 @@
 [tool.poetry]
-name = "prefab-cloud-python"
+name = "reforge-python"
 version = "0.12.0"
-description = "Python client for Prefab Feature Flags, Dynamic log levels, and Config as a Service: https://www.prefab.cloud"
+description = "Python client for Reforge Feature Flags, Dynamic log levels, and Config as a Service: https://www.reforge.com"
 license = "MIT"
-authors = ["Michael Berkowitz <michael.berkowitz@gmail.com>", "James Kebinger <james.kebinger@prefab.cloud>"]
-maintainers = ["Michael Berkowitz <michael.berkowitz@gmail.com>", "James Kebinger <james.kebinger@prefab.cloud>"]
+authors = ["Michael Berkowitz <michael.berkowitz@gmail.com>", "James Kebinger <james.kebinger@reforge.com>"]
+maintainers = ["Michael Berkowitz <michael.berkowitz@gmail.com>", "James Kebinger <james.kebinger@reforge.com>"]
 readme = "README.md"
-homepage = "https://www.prefab.cloud"
-repository = "https://github.com/prefab-cloud/prefab-cloud-python"
-documentation = "https://docs.prefab.cloud/docs/sdks/python"
-packages = [{include = "prefab_cloud_python"}, {include = "prefab_pb2.py"}]
+homepage = "https://www.reforge.com"
+repository = "https://github.com/ReforgeHQ/sdk-python"
+documentation = "https://docs.reforge.com/docs/sdks/python"
+packages = [{include = "sdk_reforge"}, {include = "prefab_pb2.py"}]
+include = ["sdk_reforge/VERSION"]
 
 [tool.poetry.dependencies]
 cryptography = ">= 42.0.0"
@@ -30,6 +31,7 @@ timecop = "^0.5.0dev"
 mypy = "^1.4.1"
 pre-commit = "^3.5.0"
 responses = "^0.24.1"
+types-requests = "^2.31.0"
 
 [build-system]
 requires = ["poetry-core"]

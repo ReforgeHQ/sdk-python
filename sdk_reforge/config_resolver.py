@@ -130,7 +130,7 @@ class CriteriaEvaluator:
         return True
 
     def evaluate_criterion(self, criterion, properties):
-        if criterion.property_name == "prefab.current-time":
+        if criterion.property_name in ["prefab.current-time", "reforge.current-time"]:
             value_from_properties = int(time.time() * 1000)
         else:
             value_from_properties = properties.get(criterion.property_name)

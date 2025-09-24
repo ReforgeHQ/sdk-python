@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch
 from requests import Response
-from prefab_cloud_python._requests import ApiClient, CacheEntry
+from sdk_reforge._requests import ApiClient, CacheEntry
 import time
 
 
 # Dummy options for testing.
 class DummyOptions:
-    prefab_api_urls = ["https://a.example.com", "https://b.example.com"]
+    reforge_api_urls = ["https://a.example.com", "https://b.example.com"]
     version = "1.0"
 
 

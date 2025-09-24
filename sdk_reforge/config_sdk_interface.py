@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 import prefab_pb2 as Prefab
-from prefab_cloud_python import Options
+from sdk_reforge import Options
 
 
-class ConfigClientInterface(ABC):
+class ConfigSDKInterface(ABC):
     @abstractmethod
     def continue_connection_processing(self) -> bool:
         pass

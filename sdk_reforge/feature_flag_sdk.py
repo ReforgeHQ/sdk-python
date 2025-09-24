@@ -8,7 +8,7 @@ from ._internal_logging import InternalLogger
 logger = InternalLogger(__name__)
 
 
-class FeatureFlagClient:
+class FeatureFlagSDK:
     def __init__(self, base_client):
         self.base_client = base_client
 
@@ -20,7 +20,7 @@ class FeatureFlagClient:
     def feature_is_on_for(
         self, feature_name, context: Optional[dict | Context] = None
     ) -> bool:
-        variant = self.base_client.config_client().get(
+        variant = self.base_client.config_sdk().get(
             feature_name, False, context=context
         )
         return self._is_on(variant)
@@ -39,7 +39,7 @@ class FeatureFlagClient:
         default=NoDefaultProvided,
         context: Optional[dict | Context] = None,
     ) -> ConfigValueType:
-        return self.base_client.config_client().get(
+        return self.base_client.config_sdk().get(
             feature_name, default=default, context=context
         )
 

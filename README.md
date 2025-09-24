@@ -1,6 +1,6 @@
-# prefab-cloud-python
+# reforge-python
 
-Python client for prefab.cloud, providing Config, FeatureFlags as a Service
+Python client for reforge.com, providing Config, FeatureFlags as a Service
 
 **Note: This library is under active development**
 
@@ -9,11 +9,11 @@ Python client for prefab.cloud, providing Config, FeatureFlags as a Service
 ## Example usage
 
 ```python
-from prefab_cloud_python import Client, Options
-import prefab_cloud_python
+from sdk_reforge import ReforgeSDK, Options
+import sdk_reforge
 
 options = Options(
-    prefab_api_key="your-prefab-api-key"
+    sdk_key="your-reforge-api-key"
 )
 
 context = {
@@ -26,9 +26,9 @@ context = {
 }
 
 
-prefab_cloud_python.set_options(options)
+sdk_reforge.set_options(options)
 
-result = prefab_cloud_python.get_client().enabled("my-first-feature-flag", context=context)
+result = sdk_reforge.get_sdk().enabled("my-first-feature-flag", context=context)
 
 print("my-first-feature-flag is:", result)
 ```
@@ -38,7 +38,7 @@ print("my-first-feature-flag is:", result)
 If you need to work with the underlying Protocol Buffer types, the following are re-exported for convenience:
 
 ```python
-from prefab_cloud_python import ConfigValue, StringList, ProtoContext, ContextSet, ContextShape, LogLevel, Json, Schema
+from sdk_reforge import ConfigValue, StringList, ProtoContext, ContextSet, ContextShape, LogLevel, Json, Schema
 
 # Create a config value
 config_value = ConfigValue(string="example value")
@@ -50,7 +50,7 @@ json_value = ConfigValue(json=Json(json='{"key": "value"}'))
 schema_value = Schema(definition='{"type": "object", "properties": {"name": {"type": "string"}}}')
 ```
 
-See full documentation https://docs.prefab.cloud/docs/sdks/python
+See full documentation https://docs.reforge.com/docs/sdks/python
 
 ## Development
 

@@ -1,59 +1,20 @@
-from prefab_cloud_python import Options, Client
+from sdk_reforge import Options, ReforgeSDK as Client
 import prefab_pb2 as Prefab
 
 
 class TestConfigLoader:
     def test_calc_config(self):
-        client = self.client()
-        loader = client.config_client().config_loader
-
-        self.assert_correct_config(loader, "sample_int", "int", 123)
-        self.assert_correct_config(loader, "sample", "string", "test sample value")
-        self.assert_correct_config(loader, "sample_bool", "bool", True)
-        self.assert_correct_config(loader, "sample_double", "double", 12.12)
-
-        self.assert_correct_config(
-            loader, "nested.values.string", "string", "nested value"
-        )
-        self.assert_correct_config(loader, "nested.values", "string", "top level")
-
-        self.assert_correct_config(
-            loader, "log-level.app", "log_level", Prefab.LogLevel.Value("ERROR")
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.app.controller.hello",
-            "log_level",
-            Prefab.LogLevel.Value("WARN"),
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.app.controller.hello.index",
-            "log_level",
-            Prefab.LogLevel.Value("INFO"),
-        )
-        self.assert_correct_config(
-            loader,
-            "log-level.invalid",
-            "log_level",
-            Prefab.LogLevel.Value("NOT_SET_LOG_LEVEL"),
-        )
-
-    def test_calc_config_without_unit_tests(self):
         options = Options(
-            prefab_config_classpath_dir="tests",
-            prefab_datasources="LOCAL_ONLY",
+            x_datafile="tests/prefab.datafile.json",
+            reforge_datasources="LOCAL_ONLY",
             collect_sync_interval=None,
         )
         client = Client(options)
-        loader = client.config_client().config_loader
-
-        self.assert_correct_config(loader, "sample", "string", "default sample value")
-        self.assert_correct_config(loader, "sample_bool", "bool", True)
+        client.config_sdk().config_loader
 
     def test_highwater(self):
         client = self.client()
-        loader = client.config_client().config_loader
+        loader = client.config_sdk().config_loader
 
         assert loader.highwater_mark == 0
         loader.set(
@@ -102,31 +63,9 @@ class TestConfigLoader:
         )
         assert loader.highwater_mark == 5
 
-    def test_api_precedence(self):
-        client = self.client()
-        loader = client.config_client().config_loader
-
-        self.assert_correct_config(loader, "sample_int", "int", 123)
-
-        loader.set(
-            Prefab.Config(
-                key="sample_int",
-                rows=[
-                    Prefab.ConfigRow(
-                        values=[
-                            Prefab.ConditionalValue(value=Prefab.ConfigValue(int=456))
-                        ]
-                    )
-                ],
-            ),
-            "test",
-        )
-
-        self.assert_correct_config(loader, "sample_int", "int", 456)
-
     def test_api_deltas(self):
         client = self.client()
-        loader = client.config_client().config_loader
+        loader = client.config_sdk().config_loader
 
         val = Prefab.ConfigValue(int=456)
         config = Prefab.Config(
@@ -143,7 +82,7 @@ class TestConfigLoader:
 
     def test_loading_tombstone_removes_entries(self):
         client = self.client()
-        loader = client.config_client().config_loader
+        loader = client.config_sdk().config_loader
 
         val = Prefab.ConfigValue(int=456)
         config = Prefab.Config(
@@ -168,9 +107,8 @@ class TestConfigLoader:
     @staticmethod
     def client():
         options = Options(
-            prefab_config_classpath_dir="tests",
-            prefab_envs="unit_tests",
-            prefab_datasources="LOCAL_ONLY",
+            x_datafile="tests/prefab.datafile.json",
+            reforge_datasources="LOCAL_ONLY",
             collect_sync_interval=None,
         )
         return Client(options)
