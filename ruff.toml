@@ -4,7 +4,7 @@ ignore = [
 ]
 
 [isort]
-known-first-party = ["sdk_reforge", "reforge_pb2", "reforge_pb2_grpc", "tests"]
+known-first-party = ["sdk_reforge", "prefab_pb2", "tests"]
 force-single-line = true
 required-imports = ["from __future__ import annotations"]
 

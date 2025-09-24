@@ -159,7 +159,7 @@ class ConfigSDK(ConfigSDKInterface):
         try:
             hwm = self.config_loader.highwater_mark
             response = self.api_client.resilient_request(
-                "/api/v1/configs/" + str(hwm),
+                "/api/v2/configs/" + str(hwm),
                 auth=("authuser", self.options.api_key),
                 timeout=4,
                 allow_cache=True,

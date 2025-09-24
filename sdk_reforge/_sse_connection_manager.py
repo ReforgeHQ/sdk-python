@@ -44,11 +44,11 @@ class SSEConnectionManager:
             try:
                 logger.debug("Starting streaming connection")
                 headers = {
-                    "x-prefab-start-at-id": f"{self.config_client.highwater_mark()}",
+                    "Last-Event-ID": f"{self.config_client.highwater_mark()}",
                     "accept": "text/event-stream",
                 }
                 response = self.api_client.resilient_request(
-                    "/api/v1/sse/config",
+                    "/api/v2/sse/config",
                     headers=headers,
                     stream=True,
                     auth=("authuser", self.config_client.options.api_key),
