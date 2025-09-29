@@ -165,6 +165,11 @@ class ConfigSDK(ConfigSDKInterface):
                 allow_cache=True,
             )
             if response.ok:
+                if not response.content or len(response.content) == 0:
+                    logger.warning(
+                        "Received zero-byte config payload from remote_cdn_api, treating as connection error"
+                    )
+                    return False
                 configs = Prefab.Configs.FromString(response.content)
                 self.load_configs(configs, "remote_api_cdn")
                 return True
