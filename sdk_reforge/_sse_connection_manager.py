@@ -97,7 +97,14 @@ class SSEConnectionManager:
                     logger.info("Client is shutting down, exiting SSE event loop")
                     return
                 if event.data:
-                    configs = Prefab.Configs.FromString(base64.b64decode(event.data))
+                    decoded_data = base64.b64decode(event.data)
+                    if not decoded_data or len(decoded_data) == 0:
+                        logger.warning(
+                            "Received zero-byte config payload from SSE stream, treating as connection error"
+                        )
+                        # Return early to trigger reconnection logic
+                        return
+                    configs = Prefab.Configs.FromString(decoded_data)
                     self.config_client.load_configs(configs, "sse_streaming")
             self.sse_client.close()
             self.sse_client = None
