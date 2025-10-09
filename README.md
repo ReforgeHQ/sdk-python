@@ -2,10 +2,6 @@
 
 Python client for reforge.com, providing Config, FeatureFlags as a Service
 
-**Note: This library is under active development**
-
-[Sign up to be notified about updates](https://forms.gle/2qsjMFvjGnkTnA9T8)
-
 ## Example usage
 
 ```python
@@ -13,7 +9,7 @@ from sdk_reforge import ReforgeSDK, Options
 import sdk_reforge
 
 options = Options(
-    sdk_key="your-reforge-api-key"
+    sdk_key="your-reforge-sdk-key"
 )
 
 context = {
