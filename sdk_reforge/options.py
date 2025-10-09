@@ -80,7 +80,7 @@ class Options:
         self.datafile = x_datafile
         self.__set_api_key(
             sdk_key
-            or os.environ.get("REFORGE_SDK_KEY")
+            or os.environ.get("REFORGE_BACKEND_SDK_KEY")
             or os.environ.get("PREFAB_API_KEY")
         )
         self.__set_api_url(
