@@ -52,14 +52,23 @@ from prefab_pb2 import (
 log = _internal_logging.InternalLogger(__name__)
 
 
+__version_cache: Optional[str] = None
+
+
 def _get_version() -> str:
-    """Get the SDK version from the VERSION file"""
+    """Get the SDK version from the VERSION file (cached after first read)"""
+    global __version_cache
+    if __version_cache is not None:
+        return __version_cache
+
     try:
         version_file = os.path.join(os.path.dirname(__file__), "VERSION")
         with open(version_file, "r") as f:
-            return f.read().strip()
+            __version_cache = f.read().strip()
+            return __version_cache
     except Exception:
-        return "unknown"
+        __version_cache = "unknown"
+        return __version_cache
 
 
 __base_sdk: Optional[ReforgeSDK] = None
