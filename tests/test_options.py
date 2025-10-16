@@ -1,7 +1,7 @@
 from sdk_reforge import Options
 from sdk_reforge.options import (
-    MissingApiKeyException,
-    InvalidApiKeyException,
+    MissingSdkKeyException,
+    InvalidSdkKeyException,
     InvalidApiUrlException,
     InvalidStreamUrlException,
 )
@@ -41,16 +41,16 @@ class TestOptionsApiKey:
             assert options.api_key == "3-dev-api-key"
             assert options.api_key_id == "3"
 
-    def test_missing_api_key_error(self):
-        with pytest.raises(MissingApiKeyException) as context:
+    def test_missing_sdk_key_error(self):
+        with pytest.raises(MissingSdkKeyException) as context:
             Options()
 
-        assert "No API key found" in str(context)
+        assert "No SDK key found" in str(context)
 
-    def test_invalid_api_key_error(self):
-        with pytest.raises(InvalidApiKeyException) as context:
-            Options(sdk_key="bad_api_key")
-            assert "Invalid API key: bad_api_key" in str(context)
+    def test_invalid_sdk_key_error(self):
+        with pytest.raises(InvalidSdkKeyException) as context:
+            Options(sdk_key="bad_sdk_key")
+            assert "Invalid SDK key: bad_sdk_key" in str(context)
 
     def test_api_key_doesnt_matter_local_only_set_in_env(self):
         with extended_env({"REFORGE_DATASOURCES": "LOCAL_ONLY"}):
