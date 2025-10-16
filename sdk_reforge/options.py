@@ -9,22 +9,22 @@ from .context import Context
 from .constants import ContextDictType
 
 
-class MissingApiKeyException(Exception):
+class MissingSdkKeyException(Exception):
     """
-    Raised when no API key is found
+    Raised when no SDK key is found
     """
 
     def __init__(self) -> None:
-        super().__init__("No API key found")
+        super().__init__("No SDK key found - set REFORGE_BACKEND_SDK_KEY")
 
 
-class InvalidApiKeyException(Exception):
+class InvalidSdkKeyException(Exception):
     """
-    Raised when an invalid API key is provided
+    Raised when an invalid SDK key is provided
     """
 
     def __init__(self, api_key: str) -> None:
-        super().__init__(f"Invalid API key: {api_key}")
+        super().__init__(f"Invalid SDK key: {api_key}")
 
 
 class InvalidApiUrlException(Exception):
@@ -138,10 +138,10 @@ class Options:
             return
 
         if api_key is None:
-            raise MissingApiKeyException()
+            raise MissingSdkKeyException()
         api_key = str(api_key).strip()
         if "-" not in api_key:
-            raise InvalidApiKeyException(api_key)
+            raise InvalidSdkKeyException(api_key)
         self.api_key = api_key
         self.api_key_id = api_key.split("-")[0]
 
