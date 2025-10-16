@@ -20,11 +20,11 @@ Re-exported Protocol Buffer types:
 """
 
 from typing import Optional
+import os
 
 from . import _internal_logging
 from .options import Options as Options
 from .sdk import ReforgeSDK as ReforgeSDK
-from importlib.metadata import version
 from .read_write_lock import ReadWriteLock as _ReadWriteLock
 from .context import Context, NamedContext
 from .feature_flag_sdk import FeatureFlagSDK
@@ -52,6 +52,16 @@ from prefab_pb2 import (
 log = _internal_logging.InternalLogger(__name__)
 
 
+def _get_version() -> str:
+    """Get the SDK version from the VERSION file"""
+    try:
+        version_file = os.path.join(os.path.dirname(__file__), "VERSION")
+        with open(version_file, "r") as f:
+            return f.read().strip()
+    except Exception:
+        return "unknown"
+
+
 __base_sdk: Optional[ReforgeSDK] = None
 __options: Optional[Options] = None
 __lock = _ReadWriteLock()
@@ -75,7 +85,7 @@ def get_sdk() -> ReforgeSDK:
         if not __options:
             raise Exception("Options has not been set")
         if not __base_sdk:
-            log.info(f"Initializing Reforge SDK version {version('reforge-python')}")
+            log.info(f"Initializing Reforge SDK version {_get_version()}")
             __base_sdk = ReforgeSDK(__options)
             return __base_sdk
 
