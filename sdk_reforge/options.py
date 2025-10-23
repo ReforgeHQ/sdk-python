@@ -75,6 +75,7 @@ class Options:
         context_upload_mode: ContextUploadMode = ContextUploadMode.PERIODIC_EXAMPLE,
         global_context: Optional[ContextDictType | Context] = None,
         on_ready_callback: Optional[Callable[[], None]] = None,
+        logger_key: str = "log-levels.default",
     ) -> None:
         self.reforge_datasources = Options.__validate_datasource(reforge_datasources)
         self.datafile = x_datafile
@@ -109,6 +110,7 @@ class Options:
         self.collect_evaluation_summaries = collect_evaluation_summaries
         self.global_context = Context.normalize_context_arg(global_context)
         self.on_ready_callback = on_ready_callback
+        self.logger_key = logger_key
 
     def is_local_only(self) -> bool:
         return self.reforge_datasources == "LOCAL_ONLY"

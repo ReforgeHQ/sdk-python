@@ -7,6 +7,9 @@ Main components:
 - ReforgeSDK: The main SDK for interacting with Reforge
 - Options: Configuration options for the SDK
 - Context: Context information for evaluating configs and feature flags
+- LogLevel: Enumeration of log levels for logging configuration
+- LoggerFilter: Filter for standard Python logging integration
+- LoggerProcessor: Processor for structlog integration
 
 Re-exported Protocol Buffer types:
 - ConfigValue: Represents a configuration value
@@ -14,7 +17,6 @@ Re-exported Protocol Buffer types:
 - ProtoContext: Protocol buffer Context class
 - ContextSet: Collection of contexts
 - ContextShape: Shape information for contexts
-- LogLevel: Enumeration of log levels
 - Json: Represents JSON data in configuration values
 - Schema: Represents schema validation for configuration values
 """
@@ -29,6 +31,8 @@ from .read_write_lock import ReadWriteLock as _ReadWriteLock
 from .context import Context, NamedContext
 from .feature_flag_sdk import FeatureFlagSDK
 from .config_sdk import ConfigSDK
+from .log_level import LogLevel
+from .logging import LoggerFilter, LoggerProcessor
 from .constants import (
     ConfigValueType,
     ContextDictType,
@@ -44,10 +48,11 @@ from prefab_pb2 import (
     Context as ProtoContext,
     ContextSet,
     ContextShape,
-    LogLevel,
     Json,
     Schema,
 )
+
+# Note: LogLevel is imported from .log_level, not from prefab_pb2
 
 log = _internal_logging.InternalLogger(__name__)
 
