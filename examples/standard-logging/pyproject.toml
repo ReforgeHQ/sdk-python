@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "standard-logging-example"
+version = "0.1.0"
+description = "Example demonstrating Reforge SDK with standard Python logging"
+authors = ["Reforge"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.9"
+sdk-reforge = {path = "../../", develop = true}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

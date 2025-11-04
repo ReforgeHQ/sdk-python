@@ -41,6 +41,8 @@ class TestContextShape:
             "decrypt_with",
             "duration",
             "schema",
+            "name",
+            "description",
         ]
 
         supported = list(

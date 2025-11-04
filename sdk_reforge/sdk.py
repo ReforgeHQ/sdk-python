@@ -11,6 +11,7 @@ from .config_sdk import ConfigSDK
 from .feature_flag_sdk import FeatureFlagSDK
 from .options import Options
 from ._requests import TimeoutHTTPAdapter, VersionHeader, Version
+from .log_level import LogLevel
 from typing import Optional
 import prefab_pb2 as Prefab
 import uuid
@@ -93,6 +94,50 @@ class ReforgeSDK:
         ):
             return True
         return False
+
+    def get_log_level(self, logger_name: str) -> LogLevel:
+        """
+        Get the log level for the given logger name.
+
+        This evaluates the config at the logger_key (from Options, default "log-levels.default")
+        with a context containing the logger name. Returns LogLevel.DEBUG if no config is found.
+
+        Args:
+            logger_name: The name of the logger to get the level for
+
+        Returns:
+            LogLevel: The log level for this logger
+        """
+        log_context = {
+            "reforge-sdk-logging": {"lang": "python", "logger-path": logger_name}
+        }
+
+        try:
+            # Get the protobuf LogLevel value from the config
+            pb_log_level = self.get(
+                self.options.logger_key, default=None, context=log_context
+            )
+
+            if pb_log_level is None:
+                return LogLevel.DEBUG
+
+            # Map from protobuf LogLevel to our LogLevel enum
+            if pb_log_level == Prefab.LogLevel.Value("TRACE"):
+                return LogLevel.TRACE
+            elif pb_log_level == Prefab.LogLevel.Value("DEBUG"):
+                return LogLevel.DEBUG
+            elif pb_log_level == Prefab.LogLevel.Value("INFO"):
+                return LogLevel.INFO
+            elif pb_log_level == Prefab.LogLevel.Value("WARN"):
+                return LogLevel.WARN
+            elif pb_log_level == Prefab.LogLevel.Value("ERROR"):
+                return LogLevel.ERROR
+            elif pb_log_level == Prefab.LogLevel.Value("FATAL"):
+                return LogLevel.FATAL
+            else:
+                return LogLevel.DEBUG
+        except Exception:
+            return LogLevel.DEBUG
 
     def context(self) -> Context:
         return Context.get_current()

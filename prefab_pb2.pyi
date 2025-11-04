@@ -56,6 +56,7 @@ class _ConfigTypeEnumTypeWrapper(
     LIMIT_DEFINITION: _ConfigType.ValueType  # 5
     DELETED: _ConfigType.ValueType  # 6
     SCHEMA: _ConfigType.ValueType  # 7
+    LOG_LEVEL_V2: _ConfigType.ValueType  # 8
 
 class ConfigType(_ConfigType, metaclass=_ConfigTypeEnumTypeWrapper): ...
 
@@ -68,6 +69,7 @@ SEGMENT: ConfigType.ValueType  # 4
 LIMIT_DEFINITION: ConfigType.ValueType  # 5
 DELETED: ConfigType.ValueType  # 6
 SCHEMA: ConfigType.ValueType  # 7
+LOG_LEVEL_V2: ConfigType.ValueType  # 8
 global___ConfigType = ConfigType
 
 class _LogLevel:
@@ -179,6 +181,8 @@ class ConfigValue(google.protobuf.message.Message):
     SCHEMA_FIELD_NUMBER: builtins.int
     CONFIDENTIAL_FIELD_NUMBER: builtins.int
     DECRYPT_WITH_FIELD_NUMBER: builtins.int
+    NAME_FIELD_NUMBER: builtins.int
+    DESCRIPTION_FIELD_NUMBER: builtins.int
     int: builtins.int
     string: builtins.str
     bytes: builtins.bytes
@@ -205,6 +209,10 @@ class ConfigValue(google.protobuf.message.Message):
     """don't log or telemetry this value"""
     decrypt_with: builtins.str
     """key name to decrypt with"""
+    name: builtins.str
+    """used for naming the allowable values for feature flags"""
+    description: builtins.str
+    """used for naming the allowable values for feature flags"""
     def __init__(
         self,
         *,
@@ -224,6 +232,8 @@ class ConfigValue(google.protobuf.message.Message):
         schema: global___Schema | None = ...,
         confidential: builtins.bool | None = ...,
         decrypt_with: builtins.str | None = ...,
+        name: builtins.str | None = ...,
+        description: builtins.str | None = ...,
     ) -> None: ...
     def HasField(
         self,
@@ -232,6 +242,10 @@ class ConfigValue(google.protobuf.message.Message):
             b"_confidential",
             "_decrypt_with",
             b"_decrypt_with",
+            "_description",
+            b"_description",
+            "_name",
+            b"_name",
             "bool",
             b"bool",
             "bytes",
@@ -240,6 +254,8 @@ class ConfigValue(google.protobuf.message.Message):
             b"confidential",
             "decrypt_with",
             b"decrypt_with",
+            "description",
+            b"description",
             "double",
             b"double",
             "duration",
@@ -254,6 +270,8 @@ class ConfigValue(google.protobuf.message.Message):
             b"limit_definition",
             "log_level",
             b"log_level",
+            "name",
+            b"name",
             "provided",
             b"provided",
             "schema",
@@ -275,6 +293,10 @@ class ConfigValue(google.protobuf.message.Message):
             b"_confidential",
             "_decrypt_with",
             b"_decrypt_with",
+            "_description",
+            b"_description",
+            "_name",
+            b"_name",
             "bool",
             b"bool",
             "bytes",
@@ -283,6 +305,8 @@ class ConfigValue(google.protobuf.message.Message):
             b"confidential",
             "decrypt_with",
             b"decrypt_with",
+            "description",
+            b"description",
             "double",
             b"double",
             "duration",
@@ -297,6 +321,8 @@ class ConfigValue(google.protobuf.message.Message):
             b"limit_definition",
             "log_level",
             b"log_level",
+            "name",
+            b"name",
             "provided",
             b"provided",
             "schema",
@@ -319,6 +345,14 @@ class ConfigValue(google.protobuf.message.Message):
     def WhichOneof(
         self, oneof_group: typing_extensions.Literal["_decrypt_with", b"_decrypt_with"]
     ) -> typing_extensions.Literal["decrypt_with"] | None: ...
+    @typing.overload
+    def WhichOneof(
+        self, oneof_group: typing_extensions.Literal["_description", b"_description"]
+    ) -> typing_extensions.Literal["description"] | None: ...
+    @typing.overload
+    def WhichOneof(
+        self, oneof_group: typing_extensions.Literal["_name", b"_name"]
+    ) -> typing_extensions.Literal["name"] | None: ...
     @typing.overload
     def WhichOneof(
         self, oneof_group: typing_extensions.Literal["type", b"type"]
@@ -864,20 +898,30 @@ class ChangedBy(google.protobuf.message.Message):
     USER_ID_FIELD_NUMBER: builtins.int
     EMAIL_FIELD_NUMBER: builtins.int
     API_KEY_ID_FIELD_NUMBER: builtins.int
+    USER_IDENTITY_FIELD_NUMBER: builtins.int
     user_id: builtins.int
     email: builtins.str
     api_key_id: builtins.str
+    user_identity: builtins.str
     def __init__(
         self,
         *,
         user_id: builtins.int = ...,
         email: builtins.str = ...,
         api_key_id: builtins.str = ...,
+        user_identity: builtins.str = ...,
     ) -> None: ...
     def ClearField(
         self,
         field_name: typing_extensions.Literal[
-            "api_key_id", b"api_key_id", "email", b"email", "user_id", b"user_id"
+            "api_key_id",
+            b"api_key_id",
+            "email",
+            b"email",
+            "user_id",
+            b"user_id",
+            "user_identity",
+            b"user_identity",
         ],
     ) -> None: ...
 
