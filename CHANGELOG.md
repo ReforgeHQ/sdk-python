@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.1.1] - 2025-11-20
+
+- Fix InternalLogger to properly register with Python's logging hierarchy, enabling handler propagation from `logging.basicConfig()` and parent loggers [#18]
+
 ## [0.12.0] - 2025-04-14
 
 - Add special case handling for context `prefab.current-time` to return the current time (UTC) to round out new operator support [#124]

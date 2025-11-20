@@ -69,9 +69,58 @@ class InternalLogger(logging.Logger):
         super().__init__(name, level)
         self.thread_local = threading.local()
 
-    def log(self, level: int, msg, *args, **kwargs) -> None:
+        # Register this logger with the logging manager so it can participate
+        # in the logger hierarchy and inherit handlers from parent loggers
+        logging.Logger.manager.loggerDict[name] = self
+
+        # Set up the parent logger in the hierarchy
+        # This is adapted from logging.Logger.manager._fixupParents
+        i = name.rfind(".")
+        rv = None
+        while (i > 0) and not rv:
+            substr = name[:i]
+            if substr not in logging.Logger.manager.loggerDict:
+                logging.Logger.manager.loggerDict[substr] = logging.PlaceHolder(self)
+            else:
+                obj = logging.Logger.manager.loggerDict[substr]
+                if isinstance(obj, logging.Logger):
+                    rv = obj
+                else:
+                    # It's a PlaceHolder
+                    obj.append(self)
+            i = name.rfind(".", 0, i - 1)
+        if not rv:
+            rv = logging.root
+        self.parent = rv
+
+    def _log(
+        self,
+        level: int,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1,
+    ) -> None:
+        """
+        Override _log to add prefab_internal to extra.
+        This is called by info(), debug(), warning(), error(), etc.
+        """
         if not ReentrancyCheck.is_set():
-            extras = kwargs.pop("extra", {})
-            extras["prefab_internal"] = True
-            # Pass the possibly-modified 'extra' dictionary to the underlying logger
-            super().log(level, msg, *args, extra=extras, **kwargs)
+            if extra is None:
+                extra = {}
+            else:
+                # Make a copy to avoid modifying the caller's dict
+                extra = extra.copy()
+            extra["prefab_internal"] = True
+
+            super()._log(
+                level,
+                msg,
+                args,
+                exc_info=exc_info,
+                extra=extra,
+                stack_info=stack_info,
+                stacklevel=stacklevel,
+            )
