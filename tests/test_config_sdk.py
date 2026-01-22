@@ -162,3 +162,129 @@ class TestConfigSDK:
         )
         on_ready_called.wait(timeout=2)
         assert on_ready_called.is_set()
+
+
+class TestLoadCheckpointErrorHandling:
+    """Test that load_checkpoint handles errors gracefully and starts streaming.
+
+    The design is that streaming should start as a fallback even if checkpoint
+    loading fails, but finish_init() should NOT be called - let SSE load configs
+    (which will call finish_init), or let the timeout in get() kick in as designed.
+    """
+
+    def test_starts_streaming_when_no_checkpoint_found(self):
+        """When both CDN and cache fail to load, streaming should still start."""
+        from unittest.mock import Mock, patch
+
+        mock_base_client = Mock()
+        mock_base_client.options = Options(
+            sdk_key="123-test-key",
+            x_use_local_cache=False,
+        )
+        mock_base_client.shutdown_flag = threading.Event()
+
+        with patch.object(ConfigSDK, "__init__", lambda self, x: None):
+            config_sdk = ConfigSDK(None)
+            config_sdk.base_client = mock_base_client
+            config_sdk._options = mock_base_client.options
+            config_sdk.config_loader = Mock()
+            config_sdk.config_loader.highwater_mark = 0
+            config_sdk.api_client = Mock()
+            config_sdk.is_initialized = threading.Event()
+            config_sdk.init_latch = Mock()
+            config_sdk.finish_init_mutex = threading.Lock()
+            config_sdk.watchdog = None
+            config_sdk.streaming_thread = None
+            config_sdk.sse_connection_manager = Mock()
+
+            # Mock load methods to return False (no data found)
+            config_sdk.load_checkpoint_from_api_cdn = Mock(return_value=False)
+            config_sdk.load_cache = Mock(return_value=False)
+            config_sdk.start_streaming = Mock()
+
+            config_sdk.load_checkpoint()
+
+            # finish_init should NOT have been called - let SSE or timeout handle it
+            assert not config_sdk.is_initialized.is_set()
+            config_sdk.init_latch.count_down.assert_not_called()
+            # But streaming should start as fallback
+            config_sdk.start_streaming.assert_called_once()
+
+    def test_starts_streaming_on_unexpected_exception(self):
+        """When an unexpected exception occurs, streaming should still start."""
+        from unittest.mock import Mock, patch
+
+        mock_base_client = Mock()
+        mock_base_client.options = Options(
+            sdk_key="123-test-key",
+            x_use_local_cache=False,
+        )
+        mock_base_client.shutdown_flag = threading.Event()
+
+        with patch.object(ConfigSDK, "__init__", lambda self, x: None):
+            config_sdk = ConfigSDK(None)
+            config_sdk.base_client = mock_base_client
+            config_sdk._options = mock_base_client.options
+            config_sdk.config_loader = Mock()
+            config_sdk.config_loader.highwater_mark = 0
+            config_sdk.api_client = Mock()
+            config_sdk.is_initialized = threading.Event()
+            config_sdk.init_latch = Mock()
+            config_sdk.finish_init_mutex = threading.Lock()
+            config_sdk.watchdog = None
+            config_sdk.streaming_thread = None
+            config_sdk.sse_connection_manager = Mock()
+
+            # Mock load_checkpoint_from_api_cdn to raise an unexpected exception
+            config_sdk.load_checkpoint_from_api_cdn = Mock(
+                side_effect=RuntimeError("Unexpected network error")
+            )
+            config_sdk.start_streaming = Mock()
+
+            config_sdk.load_checkpoint()
+
+            # finish_init should NOT have been called - let SSE or timeout handle it
+            assert not config_sdk.is_initialized.is_set()
+            config_sdk.init_latch.count_down.assert_not_called()
+            # But streaming should start as fallback
+            config_sdk.start_streaming.assert_called_once()
+
+    def test_does_not_start_streaming_on_unauthorized(self):
+        """When UnauthorizedException occurs, streaming should NOT start."""
+        from unittest.mock import Mock, patch
+        from sdk_reforge._requests import UnauthorizedException
+
+        mock_base_client = Mock()
+        mock_base_client.options = Options(
+            sdk_key="123-test-key",
+            x_use_local_cache=False,
+        )
+        mock_base_client.shutdown_flag = threading.Event()
+
+        with patch.object(ConfigSDK, "__init__", lambda self, x: None):
+            config_sdk = ConfigSDK(None)
+            config_sdk.base_client = mock_base_client
+            config_sdk._options = mock_base_client.options
+            config_sdk.config_loader = Mock()
+            config_sdk.config_loader.highwater_mark = 0
+            config_sdk.api_client = Mock()
+            config_sdk.is_initialized = threading.Event()
+            config_sdk.init_latch = Mock()
+            config_sdk.finish_init_mutex = threading.Lock()
+            config_sdk.unauthorized_event = threading.Event()
+            config_sdk.watchdog = None
+            config_sdk.streaming_thread = None
+            config_sdk.sse_connection_manager = Mock()
+
+            # Mock load_checkpoint_from_api_cdn to raise UnauthorizedException
+            config_sdk.load_checkpoint_from_api_cdn = Mock(
+                side_effect=UnauthorizedException("bad-key")
+            )
+            config_sdk.start_streaming = Mock()
+
+            config_sdk.load_checkpoint()
+
+            # Unauthorized should be handled, streaming should NOT start
+            assert config_sdk.unauthorized_event.is_set()
+            config_sdk.init_latch.count_down.assert_called_once()
+            config_sdk.start_streaming.assert_not_called()

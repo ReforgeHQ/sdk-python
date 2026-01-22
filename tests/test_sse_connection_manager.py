@@ -8,7 +8,6 @@ from sdk_reforge._sse_connection_manager import (
     SSEConnectionManager,
     MIN_BACKOFF_TIME,
 )
-from sdk_reforge._requests import UnauthorizedException
 
 
 class TestSSEConnectionManager(unittest.TestCase):
@@ -119,9 +118,39 @@ class TestSSEConnectionManager(unittest.TestCase):
         )
 
     @patch("sdk_reforge._sse_connection_manager.time.sleep")
-    def test_backoff_on_unauthorized_exception(self, mock_sleep):
+    def test_handles_401_unauthorized_response(self, mock_sleep):
+        """Verify 401 response triggers handle_unauthorized_response and stops loop"""
+        mock_response = Mock()
+        mock_response.status_code = 401
+        mock_response.ok = False
+
+        # Create HTTPError with response attached
+        http_error = HTTPError("401 Client Error: Unauthorized")
+        http_error.response = mock_response
+        mock_response.raise_for_status.side_effect = http_error
+
+        self.api_client.resilient_request.return_value = mock_response
         self.config_client.continue_connection_processing.side_effect = [True, False]
-        self.api_client.resilient_request.side_effect = UnauthorizedException("the key")
+
+        self.sse_manager.streaming_loop()
+
+        self.config_client.handle_unauthorized_response.assert_called_once()
+        mock_sleep.assert_not_called()
+
+    @patch("sdk_reforge._sse_connection_manager.time.sleep")
+    def test_handles_403_forbidden_response(self, mock_sleep):
+        """Verify 403 response triggers handle_unauthorized_response and stops loop"""
+        mock_response = Mock()
+        mock_response.status_code = 403
+        mock_response.ok = False
+
+        # Create HTTPError with response attached
+        http_error = HTTPError("403 Client Error: Forbidden")
+        http_error.response = mock_response
+        mock_response.raise_for_status.side_effect = http_error
+
+        self.api_client.resilient_request.return_value = mock_response
+        self.config_client.continue_connection_processing.side_effect = [True, False]
 
         self.sse_manager.streaming_loop()
 
