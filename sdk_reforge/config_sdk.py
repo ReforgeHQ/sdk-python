@@ -135,6 +135,16 @@ class ConfigSDK(ConfigSDKInterface):
             logger.warning("No success loading checkpoints")
         except UnauthorizedException:
             self.handle_unauthorized_response()
+            return
+        except Exception as e:
+            logger.error(f"Unexpected error loading checkpoint: {e}")
+
+        # If we get here, checkpoint loading failed - start streaming as fallback
+        # Don't call finish_init() - let SSE load configs and call it,
+        # or let the timeout in get() kick in as designed
+        if self.options.is_loading_from_api():
+            logger.info("Starting streaming as fallback after checkpoint load failure")
+            self.start_streaming()
 
     def start_checkpointing_thread(self):
         self.checkpointing_thread = threading.Thread(
