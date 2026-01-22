@@ -4,9 +4,10 @@ from typing import Optional, Callable, TYPE_CHECKING
 
 import sseclient  # type: ignore
 from requests import Response
+from requests.exceptions import HTTPError
 
 from sdk_reforge._internal_logging import InternalLogger
-from sdk_reforge._requests import ApiClient, UnauthorizedException
+from sdk_reforge._requests import ApiClient
 from sdk_reforge._sse_watchdog import WatchdogResponseWrapper
 import prefab_pb2 as Prefab
 from sdk_reforge.config_sdk_interface import ConfigSDKInterface
@@ -78,14 +79,27 @@ class SSEConnectionManager:
                             too_short_connection_count = 0
                             backoff_time = MIN_BACKOFF_TIME
                         time.sleep(backoff_time)
-                except UnauthorizedException:
-                    self.config_client.handle_unauthorized_response()
                 except TooQuickConnectionException as e:
                     logger.debug(
                         f"Connection ended quickly: {str(e)}. Will apply backoff."
                     )
                     backoff_time = min(backoff_time * 2, MAX_BACKOFF_TIME)
                     time.sleep(backoff_time)
+                except HTTPError as e:
+                    # Check for unauthorized (401/403) responses
+                    if e.response is not None and e.response.status_code in (401, 403):
+                        logger.warning(
+                            f"Received {e.response.status_code} response, stopping SSE"
+                        )
+                        self.config_client.handle_unauthorized_response()
+                    else:
+                        if not self.config_client.is_shutting_down():
+                            backoff_time = min(backoff_time * 2, MAX_BACKOFF_TIME)
+                            logger.warning(
+                                f"Streaming connection error ({type(e).__name__}): {str(e)}, "
+                                f"Will retry in {backoff_time} seconds"
+                            )
+                            time.sleep(backoff_time)
                 except BaseException as e:
                     # Re-raise system exceptions that should terminate the thread
                     if isinstance(e, (KeyboardInterrupt, SystemExit)):
