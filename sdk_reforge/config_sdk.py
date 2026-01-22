@@ -11,6 +11,7 @@ import os
 from ._count_down_latch import CountDownLatch
 from ._requests import ApiClient, UnauthorizedException
 from ._sse_connection_manager import SSEConnectionManager
+from ._sse_watchdog import SSEWatchdog
 from .config_sdk_interface import ConfigSDKInterface
 from .config_loader import ConfigLoader
 from .config_resolver import ConfigResolver
@@ -47,7 +48,7 @@ class ConfigSDK(ConfigSDKInterface):
         self.is_initialized = threading.Event()
         self.checkpointing_thread = None
         self.streaming_thread = None
-        self.sse_client = None
+        self.watchdog: Optional[SSEWatchdog] = None
         logger.info("Initializing ConfigClient")
         self.base_client = base_client
         self._options = base_client.options
@@ -60,8 +61,15 @@ class ConfigSDK(ConfigSDKInterface):
         self._cache_path = None
         self.set_cache_path()
         self.api_client = ApiClient(self.options)
+
+        # Create watchdog for SSE connection health monitoring
+        self.watchdog = SSEWatchdog(
+            config_client=self,
+            poll_fallback_fn=self._watchdog_poll_fallback,
+            get_sse_client_fn=lambda: self.sse_connection_manager.sse_client,
+        )
         self.sse_connection_manager = SSEConnectionManager(
-            self.api_client, self, self.options.reforge_stream_urls
+            self.api_client, self, self.options.reforge_stream_urls, self.watchdog
         )
 
         if self.options.is_local_only():
@@ -139,6 +147,17 @@ class ConfigSDK(ConfigSDKInterface):
             target=self.sse_connection_manager.streaming_loop, daemon=True
         )
         self.streaming_thread.start()
+        # Start watchdog to monitor SSE connection health
+        if self.watchdog:
+            self.watchdog.start()
+
+    def _watchdog_poll_fallback(self) -> None:
+        """Called by watchdog when SSE connection appears stuck.
+
+        Polls the checkpoint API to get fresh config data.
+        """
+        logger.info("Watchdog triggered poll fallback")
+        self.load_checkpoint_from_api_cdn()
 
     def is_shutting_down(self):
         return self.base_client.shutdown_flag.is_set()
@@ -292,5 +311,9 @@ class ConfigSDK(ConfigSDKInterface):
         self.init_latch.count_down()
 
     def close(self) -> None:
-        if self.sse_client:
-            self.sse_client.close()
+        """Clean up resources."""
+        if self.watchdog:
+            self.watchdog.stop()
+        # Close SSE client if active
+        if self.sse_connection_manager and self.sse_connection_manager.sse_client:
+            self.sse_connection_manager.sse_client.close()
