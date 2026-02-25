@@ -131,9 +131,7 @@ class ApiClient:
         self.session.mount("https://", requests.adapters.HTTPAdapter())
         self.session.mount("http://", requests.adapters.HTTPAdapter())
         self.session.headers.update(
-            {
-                VersionHeader: f"sdk-python-{getattr(options, 'version', 'development')}"
-            }
+            {VersionHeader: f"sdk-python-{getattr(options, 'version', 'development')}"}
         )
         # Initialize a cache (here with a maximum of 2 entries).
         self.cache = LRUCache(max_size=2)
