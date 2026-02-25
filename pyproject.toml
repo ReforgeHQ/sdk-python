@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sdk-reforge"
-version = "1.2.0"
+version = "1.2.1"
 description = "Python sdk for Reforge Feature Flags and Config as a Service: https://www.reforge.com"
 license = "MIT"
 authors = ["Michael Berkowitz <michael.berkowitz@gmail.com>", "James Kebinger <james.kebinger@reforge.com>"]

@@ -1,5 +1,9 @@
 # Changelog
 
+## [1.2.1] - 2026-02-25
+
+- Fix SDK version header: use correct header name `X-Reforge-SDK-Version` and value format `sdk-python-{version}` to match all other SDKs [#25]
+
 ## [1.2.0] - 2026-01-22
 
 - Add SSE watchdog to detect stuck connections and trigger recovery via polling fallback [#20]
