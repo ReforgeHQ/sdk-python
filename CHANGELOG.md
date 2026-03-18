@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.2.2] - 2026-03-18
+
+- Reset inherited singleton state after `fork()` by registering a child-only `os.register_at_fork()` handler [#26]
+- Add POSIX fork tests covering inherited lock state and fresh singleton reinitialization [#26]
+
 ## [1.2.1] - 2026-02-25
 
 - Fix SDK version header: use correct header name `X-Reforge-SDK-Version` and value format `sdk-python-{version}` to match all other SDKs [#25]
