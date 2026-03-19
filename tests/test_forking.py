@@ -20,14 +20,14 @@ def _read_exact(fd: int, size: int) -> bytes:
 
 
 @pytest.mark.skipif(not hasattr(os, "fork"), reason="requires os.fork")
-def test_child_process_replaces_inherited_singleton_lock():
+def test_child_process_replaces_inherited_singleton_lock() -> None:
     sdk_reforge.reset_instance()
 
     lock = getattr(sdk_reforge, "__lock")
     ready = threading.Event()
     release = threading.Event()
 
-    def hold_lock():
+    def hold_lock() -> None:
         with lock.write_locked():
             ready.set()
             release.wait(timeout=5)
@@ -64,7 +64,7 @@ def test_child_process_replaces_inherited_singleton_lock():
 
 
 @pytest.mark.skipif(not hasattr(os, "fork"), reason="requires os.fork")
-def test_child_process_creates_fresh_singleton_sdk_instance():
+def test_child_process_creates_fresh_singleton_sdk_instance() -> None:
     sdk_reforge.reset_instance()
     sdk_reforge.set_options(
         Options(
