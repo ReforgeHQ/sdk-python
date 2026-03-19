@@ -81,6 +81,18 @@ __options: Optional[Options] = None
 __lock = _ReadWriteLock()
 
 
+def _reset_singleton_after_fork() -> None:
+    """Drop inherited singleton state in forked children."""
+    global __base_sdk
+    global __lock
+    __base_sdk = None
+    __lock = _ReadWriteLock()
+
+
+if hasattr(os, "register_at_fork"):
+    os.register_at_fork(after_in_child=_reset_singleton_after_fork)
+
+
 def set_options(options: Options) -> None:
     """Configure the SDK. SDK will be instantiated lazily with these options. Setting them again will have no effect unless reset_instance is called"""
     global __options
