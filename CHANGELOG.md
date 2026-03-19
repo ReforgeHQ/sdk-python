@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.2] - 2026-03-18
+
+- Reset inherited singleton state after `fork()` by registering a child-only `os.register_at_fork()` handler [#26]
+- Add POSIX fork tests covering inherited lock state and fresh singleton reinitialization [#26]
+
+## [1.2.1] - 2026-02-25
+
+- Fix SDK version header: use correct header name `X-Reforge-SDK-Version` and value format `sdk-python-{version}` to match all other SDKs [#25]
+
+## [1.2.0] - 2026-01-22
+
+- Add SSE watchdog to detect stuck connections and trigger recovery via polling fallback [#20]
+- Fix 401/403 handling in SSE streaming loop - now properly catches HTTPError instead of unreachable UnauthorizedException [#20]
+- Fix silent SSE loop exits by catching BaseException and adding finally block logging [#20]
+- Ensure streaming starts even when checkpoint loading fails, allowing SSE to recover [#20]
+- Pin Poetry version to 1.8.5 in CI workflows to fix installation failures [#20]
+
 ## [1.1.1] - 2025-11-20
 
 - Fix InternalLogger to properly register with Python's logging hierarchy, enabling handler propagation from `logging.basicConfig()` and parent loggers [#18]
