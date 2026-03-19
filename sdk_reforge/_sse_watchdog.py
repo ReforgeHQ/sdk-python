@@ -82,8 +82,9 @@ class SSEWatchdog:
     def stop(self) -> None:
         """Stop the watchdog thread."""
         self._stop.set()
-        if self._thread:
-            self._thread.join(timeout=5)
+        thread = self._thread
+        if thread and thread.is_alive():
+            thread.join(timeout=5)
 
     def _run(self) -> None:
         """Main watchdog loop."""

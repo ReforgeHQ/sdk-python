@@ -209,6 +209,18 @@ class TestSSEWatchdog(unittest.TestCase):
         watchdog.stop()
         self.assertFalse(watchdog._thread.is_alive())
 
+    def test_stop_before_start_is_noop(self) -> None:
+        """Verify stop() is safe before the watchdog thread is started"""
+        watchdog = SSEWatchdog(
+            self.config_client,
+            self.poll_fallback_fn,
+            self.get_sse_client_fn,
+        )
+
+        watchdog.stop()
+
+        self.poll_fallback_fn.assert_not_called()
+
     def test_stops_when_shutting_down(self) -> None:
         """Verify watchdog stops when config_client is shutting down"""
         self.config_client.is_shutting_down.return_value = True
